@@ -1,0 +1,498 @@
+{
+  "siteIndex": [
+    {
+      "title": "Company",
+      "entries": [
+        {
+          "name": "Homepage",
+          "url": "https://www.novoterm.se"
+        },
+        {
+          "name": "Om oss (About us — team, CEO's word, philosophy, history)",
+          "url": "https://www.novoterm.se/om-oss"
+        },
+        {
+          "name": "Kontakta oss (Contact us)",
+          "url": "https://www.novoterm.se/kontakta-oss"
+        },
+        {
+          "name": "Frågor och svar (FAQ)",
+          "url": "https://www.novoterm.se/fragor-svar"
+        }
+      ]
+    },
+    {
+      "title": "Services",
+      "entries": [
+        {
+          "name": "Andra texttyper",
+          "url": "https://www.novoterm.se/tjanster/texttyper"
+        },
+        {
+          "name": "Pressmeddelanden",
+          "url": "https://www.novoterm.se/tjanster/oversattning-pressmeddelanden"
+        },
+        {
+          "name": "Policyer & Uppförandekoder",
+          "url": "https://www.novoterm.se/tjanster/oversattning-policyer-uppforandekoder"
+        },
+        {
+          "name": "Hållbarhetsrapporter",
+          "url": "https://www.novoterm.se/tjanster/oversattning-hallbarhetsrapport"
+        },
+        {
+          "name": "Hemsida",
+          "url": "https://www.novoterm.se/tjanster/oversattning-hemsida"
+        },
+        {
+          "name": "Kvartalsrapporter",
+          "url": "https://www.novoterm.se/tjanster/oversattning-kvartalsrapporter"
+        },
+        {
+          "name": "Årsredovisning",
+          "url": "https://www.novoterm.se/tjanster/oversattning-arsredovisning"
+        },
+        {
+          "name": "Textbearbetning",
+          "url": "https://www.novoterm.se/tjanster/textbearbetning"
+        },
+        {
+          "name": "Textgranskning",
+          "url": "https://www.novoterm.se/tjanster/textgranskning"
+        },
+        {
+          "name": "Korrekturläsning",
+          "url": "https://www.novoterm.se/tjanster/korrekturlasning"
+        },
+        {
+          "name": "Språkgranskning",
+          "url": "https://www.novoterm.se/tjanster/sprakgranskning"
+        },
+        {
+          "name": "AI-översättning",
+          "url": "https://www.novoterm.se/tjanster/ai-oversattning"
+        },
+        {
+          "name": "Premiumöversättning",
+          "url": "https://www.novoterm.se/tjanster/premiumoversattning"
+        },
+        {
+          "name": "Språktjänster",
+          "url": "https://www.novoterm.se/tjanster/spraktjanster"
+        },
+        {
+          "name": "Översättning",
+          "url": "https://www.novoterm.se/tjanster/oversattning"
+        }
+      ]
+    },
+    {
+      "title": "Industries",
+      "entries": [
+        {
+          "name": "Våra huvudområden",
+          "url": "https://www.novoterm.se/branscher/vara-huvudomraden"
+        },
+        {
+          "name": "Energisektorn",
+          "url": "https://www.novoterm.se/branscher/energisektorn"
+        },
+        {
+          "name": "Bygg och konstruktion",
+          "url": "https://www.novoterm.se/branscher/bygg-och-konstruktion"
+        },
+        {
+          "name": "Utbildning och ledarskap",
+          "url": "https://www.novoterm.se/branscher/utbildning-och-ledarskap"
+        },
+        {
+          "name": "Mode, design och konst",
+          "url": "https://www.novoterm.se/branscher/mode-design-och-konst"
+        },
+        {
+          "name": "Marknadsföring och PR",
+          "url": "https://www.novoterm.se/branscher/marknadsforings-och-pr"
+        },
+        {
+          "name": "Personalutveckling och HR",
+          "url": "https://www.novoterm.se/branscher/personalutveckling-och-hr"
+        },
+        {
+          "name": "Hållbarhet",
+          "url": "https://www.novoterm.se/branscher/hallbarhet"
+        },
+        {
+          "name": "Fysisk och digital säkerhet",
+          "url": "https://www.novoterm.se/branscher/fysisk-och-digital-sakerhet"
+        },
+        {
+          "name": "Försvarsbranschen",
+          "url": "https://www.novoterm.se/branscher/forsvarsbranschen"
+        },
+        {
+          "name": "IT-översättning",
+          "url": "https://www.novoterm.se/branscher/it-oversattning"
+        },
+        {
+          "name": "Teknisk översättning",
+          "url": "https://www.novoterm.se/branscher/teknisk-oversattning"
+        },
+        {
+          "name": "Juridisk översättning",
+          "url": "https://www.novoterm.se/branscher/juridisk-oversattning"
+        },
+        {
+          "name": "Medicinsk översättning",
+          "url": "https://www.novoterm.se/branscher/medicinsk-oversattning"
+        },
+        {
+          "name": "Finansiell översättning",
+          "url": "https://www.novoterm.se/branscher/finansiell-oversattning"
+        }
+      ]
+    },
+    {
+      "title": "Client Cases",
+      "entries": [
+        {
+          "name": "Naturvårdsverket",
+          "url": "https://www.novoterm.se/kundcase/naturvardsverket"
+        },
+        {
+          "name": "Julius Production",
+          "url": "https://www.novoterm.se/kundcase/julius-production"
+        },
+        {
+          "name": "True Stories",
+          "url": "https://www.novoterm.se/kundcase/true-stories"
+        },
+        {
+          "name": "Moderna Museet",
+          "url": "https://www.novoterm.se/kundcase/moderna-museet"
+        }
+      ]
+    },
+    {
+      "title": "Article Library",
+      "entries": [
+        {
+          "name": "3 tips för kvalitativ språkgranskning",
+          "url": "https://www.novoterm.se/artiklar/3-tips-for-kvalitativ-sprakgranskning"
+        },
+        {
+          "name": "6 fördelar med att översätta en hemsida",
+          "url": "https://www.novoterm.se/artiklar/6-f%c3%b6rdelar-med-att-%c3%b6vers%c3%a4tta-en-hemsida"
+        },
+        {
+          "name": "7 anledningar att inte översätta dokument med Google Translate",
+          "url": "https://www.novoterm.se/artiklar/7-anledningar-att-inte-oversatta-dokument-med-google-translate"
+        },
+        {
+          "name": "AI-översättning: fördelar och nackdelar",
+          "url": "https://www.novoterm.se/artiklar/ai-oversattning-fordelar-och-nackdelar"
+        },
+        {
+          "name": "AI-utvecklingen går allt snabbare – hur hittar du rätt väg framåt?",
+          "url": "https://www.novoterm.se/artiklar/ai-utvecklingen-hitta-ratt-vag-framat"
+        },
+        {
+          "name": "Allt du behöver veta om korrekturläsarens egenskaper",
+          "url": "https://www.novoterm.se/artiklar/allt-du-beh%c3%b6ver-veta-om-korrekturl%c3%a4sarens-egenskaper"
+        },
+        {
+          "name": "Årets finansperiod i backspegeln – en intensiv och inspirerande tid",
+          "url": "https://www.novoterm.se/artiklar/arets-finansperiod-i-backspegeln"
+        },
+        {
+          "name": "Behöver du hjälp med en översättning inom medicin? Anlita rätt översättare",
+          "url": "https://www.novoterm.se/artiklar/beh%c3%b6ver-du-hj%c3%a4lp-med-en-%c3%b6vers%c3%a4ttning-inom-medicin-anlita-r%c3%a4tt-%c3%b6vers%c3%a4ttare"
+        },
+        {
+          "name": "Beställ översättning av din årsredovisning av oss!",
+          "url": "https://www.novoterm.se/artiklar/best%c3%a4ll-%c3%b6vers%c3%a4ttning-av-%c3%a5rsredovisning"
+        },
+        {
+          "name": "Bra att veta om auktoriserade översättare",
+          "url": "https://www.novoterm.se/artiklar/bra-att-veta-om-auktoriserade-%c3%b6vers%c3%a4ttare"
+        },
+        {
+          "name": "De tre nivåerna av textgranskning",
+          "url": "https://www.novoterm.se/artiklar/de-tre-nivaerna-av-textgranskning"
+        },
+        {
+          "name": "Din översättningsbyrå i Stockholm: Novoterm Translation",
+          "url": "https://www.novoterm.se/artiklar/din-%c3%b6vers%c3%a4ttningsbyr%c3%a5-i-stockholm-novoterm-translation"
+        },
+        {
+          "name": "En guide till språkgranskning: Vad är skillnaden mellan korrekturläsning och textbearbetning?",
+          "url": "https://www.novoterm.se/artiklar/en-guide-till-sprakgranskning"
+        },
+        {
+          "name": "Får EU:s AI-förordning någon inverkan på de översättningar du beställer?",
+          "url": "https://www.novoterm.se/artiklar/eu-ai-forordning-oversattningar"
+        },
+        {
+          "name": "Fem anledningar att jobba som översättare",
+          "url": "https://www.novoterm.se/artiklar/fem-anledningar-att-jobba-som-oversattare"
+        },
+        {
+          "name": "Fem anledningar för företag att anlita en korrekturläsare",
+          "url": "https://www.novoterm.se/artiklar/fem-anledningar-f%c3%b6r-f%c3%b6retag-att-anlita-en-korrekturl%c3%a4sare"
+        },
+        {
+          "name": "Fem fördelar för företag med att anlita en översättningsbyrå i Stockholm",
+          "url": "https://www.novoterm.se/artiklar/fem-f%c3%b6rdelar-f%c3%b6r-f%c3%b6retag-med-att-anlita-en-%c3%b6vers%c3%a4ttningsbyr%c3%a5-i-stockholm"
+        },
+        {
+          "name": "Finansiella översättningar ger fördelar för hela organisationen",
+          "url": "https://www.novoterm.se/artiklar/finansiella-oversattningar-ger-fordelar-for-hela-organisationen"
+        },
+        {
+          "name": "Fördelarna med professionell teknisk översättning",
+          "url": "https://www.novoterm.se/artiklar/f%c3%b6rdelarna-med-professionell-teknisk-%c3%b6vers%c3%a4ttning"
+        },
+        {
+          "name": "Fyra anledningar till att anlita en översättningsbyrå för finansiell översättning",
+          "url": "https://www.novoterm.se/artiklar/fyra-anledningar-till-att-anlita-en-%c3%b6vers%c3%a4ttningsbyr%c3%a5-f%c3%b6r-finansiell-%c3%b6vers%c3%a4ttning"
+        },
+        {
+          "name": "Fyra typer av juridiska översättningar som kan vara viktiga för företag",
+          "url": "https://www.novoterm.se/artiklar/fyra-juridiska-oversattningar-som-kan-vara-viktiga-for-foretag"
+        },
+        {
+          "name": "Fyra vanliga fel en språkgranskare bör vara uppmärksam på",
+          "url": "https://www.novoterm.se/artiklar/fyra-vanliga-fel-en-spr%c3%a5kgranskare-b%c3%b6r-vara-uppm%c3%a4rksam-p%c3%a5"
+        },
+        {
+          "name": "Hur fungerar egentligen en AI-översättning och kan man lita på en sådan?",
+          "url": "https://www.novoterm.se/artiklar/hur-fungerar-ai-oversattning"
+        },
+        {
+          "name": "Hur ser arbetsprocessen ut för en översättningsbyrå? – Novoterms processguide för översättning och språkgranskning",
+          "url": "https://www.novoterm.se/artiklar/hur-ser-arbetsprocessen-ut-f%c3%b6r-en-%c3%b6vers%c3%a4ttningsbyr%c3%a5-novoterms-processguide-f%c3%b6r-%c3%b6vers%c3%a4ttning-och-spr%c3%a5kgranskning"
+        },
+        {
+          "name": "Juridisk översättning – varför det är värt att anlita en professionell översättare",
+          "url": "https://www.novoterm.se/artiklar/juridisk-oversattning-varfor-det-ar-vart-att-anlita-en-professionell-oversattare"
+        },
+        {
+          "name": "Kan AI-översättning från ChatGPT ersätta en mänsklig översättare?",
+          "url": "https://www.novoterm.se/artiklar/kan-ai-oversattning-fran-chatgpt-ersatta-en-mansklig-oversattare"
+        },
+        {
+          "name": "Kulturell medvetenhet – och varför det spelar roll för ditt varumärke",
+          "url": "https://www.novoterm.se/artiklar/kulturell-medvetenhet-varumarke"
+        },
+        {
+          "name": "Människa eller maskin: hur använder översättare AI i dag?",
+          "url": "https://www.novoterm.se/artiklar/hur-oversattare-anvander-ai"
+        },
+        {
+          "name": "Medicinska översättningar – hur många typer finns det?",
+          "url": "https://www.novoterm.se/artiklar/medicinska-oversattningar-hur-manga-typer-finns-det"
+        },
+        {
+          "name": "Nya regler för miljöpåståenden – det här behöver du veta",
+          "url": "https://www.novoterm.se/artiklar/nya-regler-for-miljopastaenden"
+        },
+        {
+          "name": "Översättning av hållbarhetsdokumentation – tre viktiga faktorer",
+          "url": "https://www.novoterm.se/artiklar/oversattning-av-hallbarhetsdokumentation-tre-viktiga-faktorer"
+        },
+        {
+          "name": "Översättning av HR-material bidrar till minskad personalomsättning",
+          "url": "https://www.novoterm.se/artiklar/oversattning-av-hr-material-bidrar-till-minskad-personalomsattning"
+        },
+        {
+          "name": "Översättning av HR-material har många fördelar",
+          "url": "https://www.novoterm.se/artiklar/oversattning-av-hr-material-har-manga-fordelar"
+        },
+        {
+          "name": "Översättning av marknadsföring – mycket mer än bara översättning",
+          "url": "https://www.novoterm.se/artiklar/oversattning-av-marknadsforing-mycket-mer-an-bara-oversattning"
+        },
+        {
+          "name": "Översättning av marknadsföringstexter – en konst med många fallgropar på vägen",
+          "url": "https://www.novoterm.se/artiklar/oversattning-av-marknadsforingstexter-en-konst-med-manga-fallgropar"
+        },
+        {
+          "name": "Översättning finska till svenska och vice versa",
+          "url": "https://www.novoterm.se/artiklar/oversattning-finska-till-svenska-och-vice-versa"
+        },
+        {
+          "name": "Översättning från engelska till svenska – varför ska jag översätta min webbplats?",
+          "url": "https://www.novoterm.se/artiklar/oversattning-fran-engelska-till-svenska-varfor-ska-jag-oversatta-min-webbplats"
+        },
+        {
+          "name": "Översättningstjänster för oöversättbara ord och fraser",
+          "url": "https://www.novoterm.se/artiklar/oversattningstjanster-for-ooversattbara-ord-och-fraser"
+        },
+        {
+          "name": "Riktlinjer för översättning från engelska till svenska",
+          "url": "https://www.novoterm.se/artiklar/riktlinjer-for-oversattning-fran-engelska-till-svenska-3"
+        },
+        {
+          "name": "Saker att fundera över när du ska anlita en översättningsbyrå",
+          "url": "https://www.novoterm.se/artiklar/saker-att-fundera-%c3%b6ver-n%c3%a4r-du-ska-anlita-en-%c3%b6vers%c3%a4ttningsbyr%c3%a5"
+        },
+        {
+          "name": "Specialiserad översättning av hållbarhetsdokument",
+          "url": "https://www.novoterm.se/artiklar/specialiserad-oversattning-av-hallbarhetsdokument"
+        },
+        {
+          "name": "Språköversättning via kostnadsfria, automatiserade maskinöversättningstjänster: Hur pålitliga är de?",
+          "url": "https://www.novoterm.se/artiklar/spr%c3%a5k%c3%b6vers%c3%a4ttning-via-kostnadsfria-automatiserade-maskin%c3%b6vers%c3%a4ttningstj%c3%a4nster-hur-p%c3%a5litliga-%c3%a4r-de"
+        },
+        {
+          "name": "Teknisk översättning – därför är korrekthet avgörande",
+          "url": "https://www.novoterm.se/artiklar/teknisk-oversattning-darfor-ar-korrekthet-avgorande"
+        },
+        {
+          "name": "Teknisk översättning och när den bör användas",
+          "url": "https://www.novoterm.se/artiklar/teknisk-%c3%b6vers%c3%a4ttning-och-n%c3%a4r-den-b%c3%b6r-anv%c3%a4ndas"
+        },
+        {
+          "name": "Tips som hjälper dig att välja rätt översättningsbyrå",
+          "url": "https://www.novoterm.se/artiklar/tips-som-hj%c3%a4lper-dig-att-v%c3%a4lja-r%c3%a4tt-%c3%b6vers%c3%a4ttningsbyr%c3%a5"
+        },
+        {
+          "name": "Tre tips för bättre översättning mellan svenska och engelska",
+          "url": "https://www.novoterm.se/artiklar/tre-tips-f%c3%b6r-b%c3%a4ttre-%c3%b6vers%c3%a4ttning-fr%c3%a5n-engelska-till-svenska"
+        },
+        {
+          "name": "Vad är en certifierad översättare?",
+          "url": "https://www.novoterm.se/artiklar/vad-ar-en-certifierad-oversattare"
+        },
+        {
+          "name": "Vad är en teknisk översättning?",
+          "url": "https://www.novoterm.se/artiklar/vad-%c3%a4r-en-teknisk-%c3%b6vers%c3%a4ttning"
+        },
+        {
+          "name": "Vad är finansiella översättningar? Varför välja en översättningsbyrå specialiserad inom finans?",
+          "url": "https://www.novoterm.se/artiklar/vad-%c3%a4r-finansiella-%c3%b6vers%c3%a4ttningar-%c3%b6vers%c3%a4ttningsbyr%c3%a5-inom-finans"
+        },
+        {
+          "name": "Vad är medicinska översättningar?",
+          "url": "https://www.novoterm.se/artiklar/vad-%c3%a4r-medicinska-%c3%b6vers%c3%a4ttningar"
+        },
+        {
+          "name": "Vad är översättningar inom byggbranschen?",
+          "url": "https://www.novoterm.se/artiklar/vad-ar-byggoversattningar"
+        },
+        {
+          "name": "Vad är skillnaden mellan textredigering, textbearbetning, korrekturläsning, textgranskning och språkgranskning?",
+          "url": "https://www.novoterm.se/artiklar/vad-%c3%a4r-skillnaden-mellan-textredigering-textbearbetning-korrekturl%c3%a4sning-textgranskning-och-spr%c3%a5kgranskning"
+        },
+        {
+          "name": "Vad är transcreation?",
+          "url": "https://www.novoterm.se/artiklar/vad-%c3%a4r-transcreation"
+        },
+        {
+          "name": "Vad betyder korrekturläsning?",
+          "url": "https://www.novoterm.se/artiklar/vad-betyder-korrekturlasning-novoterm"
+        },
+        {
+          "name": "Vad gör en språkgranskare?",
+          "url": "https://www.novoterm.se/artiklar/vad-g%c3%b6r-en-spr%c3%a5kgranskare"
+        },
+        {
+          "name": "Vad innebär en kvalitetsöversättning?",
+          "url": "https://www.novoterm.se/artiklar/vad-innebar-en-kvalitetsoversattning"
+        },
+        {
+          "name": "Vad innebär fyra ögon-principen vid språkgranskning?",
+          "url": "https://www.novoterm.se/artiklar/vad-inneb%c3%a4r-fyra-%c3%b6gon-principen-vid-spr%c3%a5kgranskning"
+        },
+        {
+          "name": "Vad innebär lokalisering? Översätt din webbsida med Novoterm",
+          "url": "https://www.novoterm.se/artiklar/vad-innebar-lokalisering-oversatt-din-webbsida-med-novoterm"
+        },
+        {
+          "name": "Varför är tekniska översättningar viktiga?",
+          "url": "https://www.novoterm.se/artiklar/varf%c3%b6r-%c3%a4r-tekniska-%c3%b6vers%c3%a4ttningar-viktiga"
+        },
+        {
+          "name": "Varför finansöversättningar behöver en specialiserad översättare",
+          "url": "https://www.novoterm.se/artiklar/varfor-finansoversattningar-behover-en-specialiserad-oversattare"
+        },
+        {
+          "name": "Varför medicinska översättningar är nödvändiga inom modern medicin",
+          "url": "https://www.novoterm.se/artiklar/varf%c3%b6r-medicinsk-%c3%b6versattningar-%c3%a4r-n%c3%b6dv%c3%a4ndiga-ino-modern-medicin"
+        },
+        {
+          "name": "Vikten av korrekturläsning och hur en korrekturläsare kan göra din text ännu bättre",
+          "url": "https://www.novoterm.se/artiklar/vikten-av-korrekturl%c3%a4sning-och-hur-en-korrekturl%c3%a4sare-kan-g%c3%b6ra-din-text-%c3%a4nnu-b%c3%a4ttre"
+        },
+        {
+          "name": "Viktiga förberedelser i kontakten med översättningsföretag",
+          "url": "https://www.novoterm.se/artiklar/viktiga-forberedelser-i-kontakten-med-oversattningsforetag-2"
+        }
+      ]
+    },
+    {
+      "title": "Video Highlights",
+      "entries": [
+        {
+          "name": "Finansiell översättning för årsredovisningar, rapporter och prospekt",
+          "url": "https://www.novoterm.se/watch/finansiell-oversattning-arsredovisningar-rapporter-prospekt"
+        },
+        {
+          "name": "Juridisk översättning för avtal, rättsliga dokument och affärsjuridik",
+          "url": "https://www.novoterm.se/watch/juridisk-oversattning-avtal-rattsliga-dokument-affarsjuridik"
+        },
+        {
+          "name": "Medicinsk översättning för läkemedel, medicinteknik och Life Science",
+          "url": "https://www.novoterm.se/watch/medicinsk-oversattning-lakemedel-medicinteknik-life-science"
+        },
+        {
+          "name": "Novoterm – översättning och språktjänster för företag",
+          "url": "https://www.novoterm.se/watch/oversattning-spraktjanster"
+        },
+        {
+          "name": "Översättning av bygg- och konstruktionsdokument",
+          "url": "https://www.novoterm.se/watch/oversattning-bygg-konstruktion"
+        },
+        {
+          "name": "Översättning av dokument och texter för energisektorn",
+          "url": "https://www.novoterm.se/watch/oversattning-energisektorn"
+        },
+        {
+          "name": "Översättning av utbildnings- och ledarskapsmaterial",
+          "url": "https://www.novoterm.se/watch/oversattning-utbildning-ledarskap"
+        },
+        {
+          "name": "Översättning inom hållbarhet, CSR och miljökommunikation",
+          "url": "https://www.novoterm.se/watch/oversattning-hallbarhet-csr"
+        },
+        {
+          "name": "Översättning inom marknadsföring och PR",
+          "url": "https://www.novoterm.se/watch/oversattning-marknadsforing-pr"
+        },
+        {
+          "name": "Översättningar för försvarsbranschen",
+          "url": "https://www.novoterm.se/watch/oversattningar-forsvarsbranschen"
+        },
+        {
+          "name": "Översättningar för fysisk och digital säkerhet",
+          "url": "https://www.novoterm.se/watch/oversattningar-fysisk-digital-sakerhet"
+        },
+        {
+          "name": "Översättningar inom HR och personalutveckling",
+          "url": "https://www.novoterm.se/watch/oversattningar-hr-personalutveckling"
+        },
+        {
+          "name": "Översättningar inom konst, design och mode",
+          "url": "https://www.novoterm.se/watch/oversattning-konst-design-mode"
+        },
+        {
+          "name": "Teknisk översättning för manualer, specifikationer och tekniska dokument",
+          "url": "https://www.novoterm.se/watch/teknisk-oversattning-manualer-specifikationer-tekniska-dokument"
+        },
+        {
+          "name": "Webb- och IT-översättning av professionella översättare",
+          "url": "https://www.novoterm.se/watch/webb-it-oversattning-professionella-oversattare"
+        }
+      ]
+    }
+  ]
+}

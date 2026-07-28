@@ -1,0 +1,28 @@
+{
+  "name": "novoterm-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Machine-readable GEO/AI-visibility layer for novoterm.se: agent page, llms.txt/llms-full.txt/ai.txt, read-only JSON API, OpenAPI spec, API catalog, and MCP server.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "refresh-content": "node scripts/refresh-content.mjs",
+    "verify-mcp": "node scripts/verify-mcp.mjs"
+  },
+  "dependencies": {
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.24.1",
+    "zod-to-json-schema": "^3.24.1",
+    "mcp-handler": "^1.0.4",
+    "@modelcontextprotocol/sdk": "^1.9.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2"
+  }
+}
