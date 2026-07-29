@@ -1,3 +1,4 @@
+import { SITE_ORIGIN } from "@/config/site-origin";
 import { MCP_SERVER_NAME, MCP_SERVER_VERSION, mcpTools } from "@/lib/mcp/tools";
 import { createRateLimiter, type RateLimitResult } from "@/lib/rate-limit";
 import { createMcpHandler } from "mcp-handler";
@@ -85,4 +86,23 @@ async function handleRequest(request: Request): Promise<Response> {
   return response;
 }
 
-export { handleRequest as DELETE, handleRequest as GET, handleRequest as POST };
+export function GET(): Response {
+  return new Response(
+    `${JSON.stringify({
+      status: "method_not_allowed",
+      message: "This is an MCP Streamable HTTP endpoint. Use a compatible MCP client.",
+      tools: `${SITE_ORIGIN}/mcp/tools`,
+      health: `${SITE_ORIGIN}/mcp/health`,
+    })}\n`,
+    {
+      status: 405,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+        Allow: "POST",
+      },
+    },
+  );
+}
+
+export { handleRequest as DELETE, handleRequest as POST };
