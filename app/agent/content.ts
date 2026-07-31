@@ -193,6 +193,7 @@ export const machineReadableSources: AgentLink[] = [
   { label: "llms.txt", url: abs("/llms.txt"), description: "Curated plain-text summary and link index." },
   { label: "llms-full.txt", url: abs("/llms-full.txt"), description: "Full-content companion: key page text inlined for single-fetch ingestion." },
   { label: "ai.txt", url: abs("/ai.txt"), description: "AI agent permissions, citation format, and disallowed uses." },
+  { label: "robots.txt", url: abs("/robots.txt"), description: "Crawler access rules, AI crawler permissions, and sitemap discovery." },
   { label: "Agent JSON API", url: abs("/agent/v1/index.json"), description: "Read-only REST API mirroring this page's data." },
   { label: "OpenAPI spec", url: abs("/openapi.json"), description: "OpenAPI 3.0.3 description of the /agent/v1 API." },
   { label: "API catalog", url: abs("/api-catalog.json"), description: "APIs.json 0.16 directory of every machine-readable endpoint." },
