@@ -15,6 +15,14 @@ async function main() {
   const toolsList = await client.listTools();
   console.log(`Discovered ${toolsList.tools.length} tools:`, toolsList.tools.map((t) => t.name).join(", "));
 
+  const contactTool = toolsList.tools.find((t) => t.name === "submit_contact_inquiry");
+  if (!contactTool) throw new Error("submit_contact_inquiry tool is missing from tools/list");
+  console.log(
+    "submit_contact_inquiry present, readOnlyHint:",
+    contactTool.annotations?.readOnlyHint,
+    "(expected false — deliberately NOT invoked here, since a real call sends a real inquiry to Novoterm's team; verify it manually with one genuine submission after deploying).",
+  );
+
   console.log("\n--- tools/call: get_company ---");
   const companyResult = await client.callTool({ name: "get_company", arguments: {} });
   const companyData = JSON.parse(companyResult.content[0].text);

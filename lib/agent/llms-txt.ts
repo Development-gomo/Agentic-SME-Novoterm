@@ -91,7 +91,7 @@ Full index: ${abs("/videos")}
 ## Notes for AI Agents
 
 - Bilingual site: Swedish (primary) and English (under /en/, partially mirrored — not every article has an English translation).
-- Contact: [${contact.email.address}](${contact.email.url}), ${contact.phone.number}, or the [contact form](${contact.form.url}).
+- No general company inbox (info@/kontakt@) was found — use the [contact form](${contact.form.url}).
 - Last verified: ${LAST_MODIFIED}.
 `;
 }

@@ -198,9 +198,7 @@ export default function AgentPage() {
           <dt>CEO</dt><dd>{organization.ceo}</dd>
           <dt>Philosophy</dt><dd>{organization.philosophy}</dd>
           <dt>Pricing model</dt><dd>{organization.pricingModel}</dd>
-          <dt>Email</dt><dd><a href={contact.email.url}>{contact.email.label}</a></dd>
-          <dt>Phone</dt><dd><a href={contact.phone.url}>{contact.phone.label}</a></dd>
-          <dt>Contact form</dt><dd><a href={contact.form.url}>{contact.form.label}</a></dd>
+          <dt>Contact</dt><dd><a href={contact.form.url}>{contact.form.label}</a></dd>
         </dl>
         <p>{organization.lead}</p>
       </section>

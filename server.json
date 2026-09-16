@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "se.novoterm/translation",
   "title": "Novoterm Translation",
-  "description": "Read-only MCP server exposing Novoterm Translation's services, industries, case studies, team, and FAQ as callable tools for AI agents. Novoterm is a Stockholm-based translation and language-review agency.",
-  "version": "1.0.0",
+  "description": "MCP server exposing Novoterm Translation's services, industries, case studies, team, and FAQ as read-only callable tools for AI agents, plus a submit_contact_inquiry tool that submits Novoterm's real contact form on a user's behalf. Novoterm is a Stockholm-based translation and language-review agency.",
+  "version": "1.1.0",
   "websiteUrl": "https://www.novoterm.se/mcp",
   "remotes": [
     {

@@ -19,10 +19,15 @@ export const SITE_CONFIG = {
     country: "SE",
   },
   sameAs: [] as string[],
+  /**
+   * No general company inbox (info@/kontakt@) was found on novoterm.se — only
+   * named staff emails on individual team-member profiles (see the `team`
+   * array in data/novoterm-content.json). The contact form is the only
+   * confirmed general contact pathway, so it is used here rather than
+   * inventing a company-wide address.
+   */
   contactPoint: {
-    type: "customer service",
-    email: "info@novoterm.se",
-    telephone: "+46 8 21 17 19",
+    type: "contact form",
     url: `${SITE_ORIGIN}/kontakta-oss`,
   },
 } as const;

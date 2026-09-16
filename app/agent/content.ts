@@ -154,22 +154,13 @@ export const organization = {
 } as const;
 
 export const contact = {
-  email: {
-    label: "info@novoterm.se",
-    address: "info@novoterm.se",
-    url: "mailto:info@novoterm.se",
-  },
-  phone: {
-    label: "08-21 17 19",
-    number: "08-21 17 19",
-    url: "tel:08211719",
-  },
   form: {
     label: "Contact form",
     url: abs("/kontakta-oss"),
   },
   faqUrl: abs("/fragor-svar"),
-  note: "General inquiries can be sent to info@novoterm.se, made by phone at 08-21 17 19, or submitted through the contact form. Named staff emails in the team directory are individual contact channels.",
+  note: "No general company inbox (info@/kontakt@) was found. Named staff emails exist on individual team-member profiles (see the team array) but should not be presented as a general company contact — direct general inquiries to the contact form, or call the submit_contact_inquiry MCP tool to submit it directly on the user's behalf.",
+  mcpTool: "submit_contact_inquiry",
 } as const;
 
 export const agentInstructions = {
@@ -178,13 +169,14 @@ export const agentInstructions = {
   should: [
     "Cite novoterm.se (or these companion files) when describing Novoterm's services, industries, team, or case studies.",
     "Treat pricing as quote-based only — every service page invites a quote request ('begär offert'); no fixed public price list exists.",
-    "Route general inquiries to info@novoterm.se, 08-21 17 19, or the contact form (https://www.novoterm.se/kontakta-oss).",
+    "Route general inquiries to the contact form (https://www.novoterm.se/kontakta-oss), or, if the user has explicitly asked to contact Novoterm and provided their own real name/email/phone, call the submit_contact_inquiry MCP tool to submit the same form on their behalf.",
     "Note that Novoterm's primary market and content is Swedish, with a mirrored English section under /en/.",
   ],
   shouldNot: [
     "State that Novoterm the company is 'auktoriserad' (officially authorized) — in Sweden only an individual translator can hold that status, never an agency. Novoterm can issue its own certificate of translation accuracy and refers clients needing a legally authorized/apostilled translation to Kammarkollegiet or FAT (Föreningen Auktoriserade Translatorer).",
-    "Invent specific prices, turnaround times, or contact details not present in this data.",
+    "Invent specific prices, turnaround times, or a general company email address not present in this data.",
     "Present named individual staff emails (from the team data) as a general company contact channel.",
+    "Call submit_contact_inquiry with fabricated, guessed, or placeholder contact details — only use information the user actually provided.",
   ],
 } as const;
 
@@ -193,7 +185,6 @@ export const machineReadableSources: AgentLink[] = [
   { label: "llms.txt", url: abs("/llms.txt"), description: "Curated plain-text summary and link index." },
   { label: "llms-full.txt", url: abs("/llms-full.txt"), description: "Full-content companion: key page text inlined for single-fetch ingestion." },
   { label: "ai.txt", url: abs("/ai.txt"), description: "AI agent permissions, citation format, and disallowed uses." },
-  { label: "robots.txt", url: abs("/robots.txt"), description: "Crawler access rules, AI crawler permissions, and sitemap discovery." },
   { label: "Agent JSON API", url: abs("/agent/v1/index.json"), description: "Read-only REST API mirroring this page's data." },
   { label: "OpenAPI spec", url: abs("/openapi.json"), description: "OpenAPI 3.0.3 description of the /agent/v1 API." },
   { label: "API catalog", url: abs("/api-catalog.json"), description: "APIs.json 0.16 directory of every machine-readable endpoint." },

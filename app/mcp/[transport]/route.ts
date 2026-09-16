@@ -1,15 +1,16 @@
-import { SITE_ORIGIN } from "@/config/site-origin";
 import { MCP_SERVER_NAME, MCP_SERVER_VERSION, mcpTools } from "@/lib/mcp/tools";
 import { createRateLimiter, type RateLimitResult } from "@/lib/rate-limit";
 import { createMcpHandler } from "mcp-handler";
 
 /**
  * Live MCP server for Novoterm, exposing services, industries, case studies,
- * team, and FAQ data as callable tools for AI agents and LLM applications.
+ * team, and FAQ data as read-only callable tools for AI agents and LLM
+ * applications, plus one action tool (submit_contact_inquiry) that submits
+ * Novoterm's real contact form on a user's explicit behalf.
  *
  * Transport: Streamable HTTP in stateless mode — a fresh server instance per
- * request (no session store), the recommended pattern for read-heavy,
- * idempotent use cases. The deprecated SSE transport is disabled.
+ * request (no session store), the recommended pattern for this mostly
+ * read-heavy, idempotent tool set. The deprecated SSE transport is disabled.
  *
  * Mounted at app/mcp/[transport]/route.ts with basePath "/mcp", so the
  * Streamable HTTP endpoint resolves to /mcp/mcp; next.config.mjs rewrites the
@@ -86,23 +87,4 @@ async function handleRequest(request: Request): Promise<Response> {
   return response;
 }
 
-export function GET(): Response {
-  return new Response(
-    `${JSON.stringify({
-      status: "method_not_allowed",
-      message: "This is an MCP Streamable HTTP endpoint. Use a compatible MCP client.",
-      tools: `${SITE_ORIGIN}/mcp/tools`,
-      health: `${SITE_ORIGIN}/mcp/health`,
-    })}\n`,
-    {
-      status: 405,
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "Cache-Control": "no-store",
-        Allow: "POST",
-      },
-    },
-  );
-}
-
-export { handleRequest as DELETE, handleRequest as POST };
+export { handleRequest as DELETE, handleRequest as GET, handleRequest as POST };

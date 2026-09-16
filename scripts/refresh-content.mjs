@@ -9,9 +9,11 @@
  * pages (hero tagline, CEO letter, philosophy, history, homepage FAQ) as well
  * as the service/industry/case_study/our-team custom post types and the
  * standard posts/headless-videos types for the article library and videos.
- * Firecrawl was used only once, before this WP REST pipeline was identified,
- * to map the site's URL structure — nothing in this ongoing refresh depends
- * on it.
+ * Firecrawl was used to map the site's URL structure before this WP REST
+ * pipeline was identified, and again on 2026-09-15 (this rebuild) to
+ * re-verify the current URL structure and to discover the live contact
+ * form's real submission mechanics (see lib/agent/contact.ts) — but nothing
+ * in this ongoing content refresh depends on it.
  *
  * Run: node scripts/refresh-content.mjs
  * Bumps `meta.crawledAt` to today, which becomes LAST_MODIFIED throughout the

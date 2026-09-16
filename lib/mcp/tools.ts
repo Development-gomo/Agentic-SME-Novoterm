@@ -11,15 +11,16 @@ import {
   team,
 } from "@/app/agent/content";
 import { SITE_ORIGIN } from "@/config/site-origin";
+import { ContactInquiryValidationError, submitContactInquiry } from "@/lib/agent/contact";
 import { SITE_CONFIG } from "@/lib/json-ld/config";
 import { z } from "zod";
 import { errorContent, jsonContent, type McpTool } from "./types";
 
 /** Identity advertised over the MCP protocol and on /mcp/health. */
 export const MCP_SERVER_NAME = "novoterm";
-export const MCP_SERVER_VERSION = "1.0.0";
+export const MCP_SERVER_VERSION = "1.1.0";
 
-/** Base URL of the read-only REST API the MCP tools mirror. */
+/** Base URL of the REST API the MCP tools mirror. */
 export const MCP_API_BASE = `${SITE_ORIGIN}/agent/v1`;
 
 const readOnly = {
@@ -27,6 +28,14 @@ const readOnly = {
   destructiveHint: false,
   idempotentHint: true,
   openWorldHint: false,
+} as const;
+
+/** submit_contact_inquiry reaches a real external system and sends a real inquiry — not read-only, not idempotent, not destructive. */
+const writesExternal = {
+  readOnlyHint: false,
+  destructiveHint: false,
+  idempotentHint: false,
+  openWorldHint: true,
 } as const;
 
 const getCompany: McpTool = {
@@ -237,7 +246,56 @@ const getArticle: McpTool = {
   },
 };
 
-/** The full ordered tool registry. Every tool is read-only. */
+const submitContactInquiryTool: McpTool = {
+  name: "submit_contact_inquiry",
+  title: "Submit Contact Inquiry",
+  description:
+    "Submits a real inquiry through Novoterm's contact form (the same form at https://www.novoterm.se/kontakta-oss), so an AI agent can act on a user's behalf instead of just returning contact details. This sends an actual message to Novoterm's team — only call it when the user has explicitly asked to contact/reach out to/submit a form to Novoterm and has provided their own real name, email, and phone number. Not read-only, not idempotent: each call sends one inquiry.",
+  inputSchema: {
+    inquiryType: z
+      .enum(["company", "private"])
+      .default("company")
+      .describe("Whether this inquiry is on behalf of a company or a private individual."),
+    fullName: z.string().min(1).describe("The inquirer's full name."),
+    email: z.string().email().describe("The inquirer's email address, for Novoterm to reply to."),
+    phone: z.string().min(1).describe("The inquirer's phone number."),
+    companyName: z
+      .string()
+      .optional()
+      .describe("Company name. Required when inquiryType is 'company'; ignored for 'private'."),
+    serviceArea: z
+      .enum(["translation", "review", "other"])
+      .describe("The desired language service: 'translation' (Översättning), 'review' (Granskning, i.e. proofreading/language review), or 'other'."),
+    message: z.string().optional().describe("Free-text message describing what the inquirer needs."),
+  },
+  annotations: writesExternal,
+  handler: async (args) => {
+    try {
+      const result = await submitContactInquiry({
+        inquiryType: (args.inquiryType as "company" | "private" | undefined) ?? "company",
+        fullName: typeof args.fullName === "string" ? args.fullName : "",
+        email: typeof args.email === "string" ? args.email : "",
+        phone: typeof args.phone === "string" ? args.phone : "",
+        companyName: typeof args.companyName === "string" ? args.companyName : undefined,
+        serviceArea: args.serviceArea as "translation" | "review" | "other",
+        message: typeof args.message === "string" ? args.message : undefined,
+      });
+      if (!result.submitted) {
+        return errorContent(result.message);
+      }
+      return jsonContent(result);
+    } catch (err) {
+      if (err instanceof ContactInquiryValidationError) {
+        return errorContent(err.message);
+      }
+      return errorContent(
+        `Failed to reach Novoterm's contact form backend: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+  },
+};
+
+/** The full ordered tool registry. Every tool is read-only except submit_contact_inquiry, which sends a real message to Novoterm. */
 export const mcpTools: McpTool[] = [
   getCompany,
   listServices,
@@ -250,4 +308,5 @@ export const mcpTools: McpTool[] = [
   searchFaq,
   searchArticles,
   getArticle,
+  submitContactInquiryTool,
 ];

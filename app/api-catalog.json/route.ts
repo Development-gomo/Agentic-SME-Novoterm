@@ -103,7 +103,7 @@ export function GET() {
       {
         name: "Novoterm MCP Server — Callable Tools for AI Agents",
         description:
-          "Live Model Context Protocol (MCP) server over Streamable HTTP. Agents invoke named read-only tools with parameters to query filtered data: services, industries, case studies, team, and FAQ search.",
+          "Live Model Context Protocol (MCP) server over Streamable HTTP. Agents invoke named tools with parameters to query filtered data (services, industries, case studies, team, FAQ search) and, via submit_contact_inquiry, to submit Novoterm's real contact form on a user's explicit behalf.",
         method: "POST",
         baseURL: abs("/mcp"),
         humanURL: abs("/mcp/tools"),
@@ -115,8 +115,9 @@ export function GET() {
           { type: "X-tool-discovery", description: "GET endpoint listing every tool with its name, description, and JSON Schema.", url: abs("/mcp/tools") },
           { type: "X-health", description: "Health/uptime probe.", url: abs("/mcp/health") },
           { type: "X-standard", description: "Model Context Protocol specification.", url: "https://modelcontextprotocol.io" },
+          { type: "X-action-tool", description: "submit_contact_inquiry sends a real inquiry through Novoterm's contact form — not read-only.", url: abs("/mcp/tools") },
         ],
-        tags: ["mcp", "agent", "tools", "streamable-http", "interactive", "llm"],
+        tags: ["mcp", "agent", "tools", "streamable-http", "interactive", "llm", "action"],
       },
       {
         name: "Robots.txt — Crawler Permissions",
@@ -131,22 +132,18 @@ export function GET() {
       },
       {
         name: "Contact",
-        description: "Confirmed public contact channels for general inquiries: email, phone, and the website contact form.",
+        description: "Human-facing contact pathway. No general company inbox is published — the contact form is the confirmed general contact channel.",
         method: "GET",
         baseURL: contact.form.url,
         humanURL: contact.form.url,
         "X-format": "text/html",
         "X-contentType": "contact-pathway",
         "X-purpose": "human-contact",
-        properties: [
-          { type: "X-email", description: "General company email.", url: contact.email.url },
-          { type: "X-phone", description: `General company phone: ${contact.phone.number}.`, url: contact.phone.url },
-        ],
         tags: ["read-only", "public", "contact"],
       },
     ],
 
-    maintainers: [{ FN: SITE_CONFIG.name, email: contact.email.address, url: contact.form.url }],
+    maintainers: [{ FN: `${SITE_CONFIG.name} — contact form`, url: contact.form.url }],
 
     "X-organization": {
       name: SITE_CONFIG.name,

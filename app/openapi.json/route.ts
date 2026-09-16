@@ -58,11 +58,7 @@ export function GET() {
         "Read-only, public JSON API exposing Novoterm Translation's services, industries, team, case studies, and FAQ for AI agents and automated systems. No authentication required.",
       version: "1.0.0",
       "x-modified": AGENT_API_MODIFIED,
-      contact: {
-        name: SITE_CONFIG.name,
-        email: "info@novoterm.se",
-        url: `${SITE_ORIGIN}/kontakta-oss`,
-      },
+      contact: { name: `${SITE_CONFIG.name} — contact form`, url: `${SITE_ORIGIN}/kontakta-oss` },
     },
     servers: [{ url: SITE_ORIGIN }],
     externalDocs: { description: "Machine-readable agent page", url: `${SITE_ORIGIN}/agent` },

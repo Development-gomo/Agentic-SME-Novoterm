@@ -1,8 +1,8 @@
 {
   "name": "novoterm-agent",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "Machine-readable GEO/AI-visibility layer for novoterm.se: agent page, llms.txt/llms-full.txt/ai.txt, read-only JSON API, OpenAPI spec, API catalog, and MCP server.",
+  "description": "Machine-readable GEO/AI-visibility layer for novoterm.se: agent page, llms.txt/llms-full.txt/ai.txt, read-only JSON API, OpenAPI spec, API catalog, and MCP server (mostly read-only, plus a submit_contact_inquiry action tool).",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
