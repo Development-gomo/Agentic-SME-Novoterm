@@ -20,7 +20,9 @@ import novotermContent from "@/data/novoterm-content.json";
 
 const abs = (path: string) => `${SITE_ORIGIN}${path}`;
 
-export const LAST_MODIFIED = novotermContent.meta.crawledAt;
+export const PAGE_PUBLISHED = "2026-07-28";
+export const SITE_CRAWLED = novotermContent.meta.crawledAt;
+export const LAST_MODIFIED = SITE_CRAWLED;
 
 export const AGENT_PATH = "/agent";
 export const AGENT_URL = `${SITE_ORIGIN}${AGENT_PATH}`;

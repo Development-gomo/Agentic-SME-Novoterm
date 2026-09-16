@@ -6,6 +6,8 @@ import {
   AGENT_PATH,
   AGENT_URL,
   LAST_MODIFIED,
+  PAGE_PUBLISHED,
+  SITE_CRAWLED,
   about,
   agentInstructions,
   caseStudies,
@@ -28,9 +30,10 @@ export const metadata: Metadata = {
   alternates: { canonical: AGENT_PATH },
   openGraph: { title: PAGE_TITLE, description: PAGE_DESCRIPTION, url: AGENT_PATH },
   other: {
+    "date-published": PAGE_PUBLISHED,
     "last-modified": LAST_MODIFIED,
     "date-modified": LAST_MODIFIED,
-    "last-crawled": LAST_MODIFIED,
+    "last-crawled": SITE_CRAWLED,
   },
 };
 
@@ -66,6 +69,7 @@ function buildGraph() {
     "@id": AGENT_URL,
     name: "Novoterm Machine-Readable Site",
     url: AGENT_URL,
+    datePublished: PAGE_PUBLISHED,
     dateModified: LAST_MODIFIED,
     publisher: { "@id": ORG_ID },
   };
@@ -149,6 +153,12 @@ export default function AgentPage() {
       <section id="metadata">
         <h2>Page Metadata</h2>
         <dl>
+          <dt>Page published</dt>
+          <dd><time dateTime={PAGE_PUBLISHED}>{PAGE_PUBLISHED}</time></dd>
+          <dt>Site crawled</dt>
+          <dd><time dateTime={SITE_CRAWLED}>{SITE_CRAWLED}</time></dd>
+          <dt>Page last updated</dt>
+          <dd><time dateTime={LAST_MODIFIED}>{LAST_MODIFIED}</time></dd>
           <dt>Last verified</dt>
           <dd>{LAST_MODIFIED}</dd>
           <dt>Source site</dt>
