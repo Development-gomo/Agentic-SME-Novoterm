@@ -6,19 +6,24 @@ import {
   faqs,
   generalFaqs,
   industries,
+  languageList,
   organization,
+  pages,
   services,
   team,
+  testimonials,
+  videos,
 } from "@/app/agent/content";
 import { SITE_ORIGIN } from "@/config/site-origin";
-import { ContactInquiryValidationError, submitContactInquiry } from "@/lib/agent/contact";
+import { CONTACT_FIELD_LIMITS, ContactInquiryValidationError, submitContactInquiry } from "@/lib/agent/contact";
+import { CONTACT_TOOL_ENABLED } from "@/config/features";
 import { SITE_CONFIG } from "@/lib/json-ld/config";
 import { z } from "zod";
 import { errorContent, jsonContent, type McpTool } from "./types";
 
 /** Identity advertised over the MCP protocol and on /mcp/health. */
 export const MCP_SERVER_NAME = "novoterm";
-export const MCP_SERVER_VERSION = "1.1.0";
+export const MCP_SERVER_VERSION = "1.2.0";
 
 /** Base URL of the REST API the MCP tools mirror. */
 export const MCP_API_BASE = `${SITE_ORIGIN}/agent/v1`;
@@ -42,7 +47,7 @@ const getCompany: McpTool = {
   name: "get_company",
   title: "Get Company",
   description:
-    "Returns Novoterm Translation's company identity: founding year, headquarters, team size, languages served, philosophy, pricing model, confirmed contact pathways, and the CEO's letter/company history from the /om-oss page.",
+    "Returns Novoterm Translation's company identity: founding year, headquarters and postal address, team size, languages served, philosophy, pricing model, general contact details (email, phone, contact form), client and translator testimonials, and the CEO's letter/company history from the /om-oss page.",
   inputSchema: {},
   annotations: readOnly,
   handler: () =>
@@ -52,14 +57,20 @@ const getCompany: McpTool = {
       url: SITE_CONFIG.url,
       founded: organization.founded,
       headquarters: organization.headquarters,
+      // Same shape as /agent/v1/company.json, plus the formatted one-line form.
+      address: SITE_CONFIG.address,
+      postalAddress: organization.address,
+      sameAs: SITE_CONFIG.sameAs,
       inHouseTeamSize: organization.inHouseTeamSize,
       freelanceNetworkSize: organization.freelanceNetworkSize,
       languages: organization.languages,
+      languageList,
       ceo: organization.ceo,
       philosophy: organization.philosophy,
       pricingModel: organization.pricingModel,
       contact,
       about,
+      testimonials,
     }),
 };
 
@@ -114,7 +125,7 @@ const getIndustry: McpTool = {
   name: "get_industry",
   title: "Get Industry",
   description:
-    "Returns a single industry by slug, including its full description of the sector-specific translation expertise Novoterm offers. Use list_industries to discover valid slugs.",
+    "Returns a single industry by slug, including its full description of the sector-specific translation expertise Novoterm offers, example documents, and the industry page's own FAQ. Use list_industries to discover valid slugs.",
   inputSchema: {
     slug: z.string().min(1).describe("Industry slug, e.g. 'finansiell-oversattning' or 'juridisk-oversattning'."),
   },
@@ -155,7 +166,7 @@ const getCaseStudy: McpTool = {
   name: "get_case_study",
   title: "Get Case Study",
   description:
-    "Returns a single client case study by slug in full: introduction, challenges, solution, and results. Use list_case_studies to discover valid slugs.",
+    "Returns a single client case study by slug in full: introduction, challenges, solution, results, translation examples, and the client's testimonial where present. Use list_case_studies to discover valid slugs.",
   inputSchema: {
     slug: z.string().min(1).describe("Case study slug, e.g. 'naturvardsverket' or 'julius-production'."),
   },
@@ -184,11 +195,31 @@ const listTeam: McpTool = {
     }),
 };
 
+const listPages: McpTool = {
+  name: "list_pages",
+  title: "List Landing Pages",
+  description:
+    "Returns Novoterm's standalone landing pages in full — the languages page (/sprak: translation into 40+ languages, localisation) and the page for production and communications agencies — with their sections, example documents, and page-specific FAQs.",
+  inputSchema: {},
+  annotations: readOnly,
+  handler: () => jsonContent({ count: pages.length, pages }),
+};
+
+const listVideos: McpTool = {
+  name: "list_videos",
+  title: "List Videos",
+  description:
+    "Returns every Novoterm video page with its description, YouTube embed URL, duration, and the related service or industry page.",
+  inputSchema: {},
+  annotations: readOnly,
+  handler: () => jsonContent({ count: videos.length, videos }),
+};
+
 const searchFaq: McpTool = {
   name: "search_faq",
   title: "Search FAQ",
   description:
-    "Searches Novoterm's FAQ (the general FAQ page, the homepage's own separate FAQ, and every per-service FAQ) for questions matching a keyword. Returns matching question/answer pairs. Omit the query to return the site-wide FAQ (general + homepage) in full.",
+    "Searches Novoterm's FAQ (the general FAQ page, the homepage's own separate FAQ, every per-service and per-industry FAQ, and the landing-page FAQs) for questions matching a keyword. Returns matching question/answer pairs. Omit the query to return the site-wide FAQ (general + homepage) in full.",
   inputSchema: {
     query: z.string().optional().describe("Keyword to search for in the FAQ questions and answers, e.g. 'auktoriserad' or 'pricing'."),
   },
@@ -256,17 +287,18 @@ const submitContactInquiryTool: McpTool = {
       .enum(["company", "private"])
       .default("company")
       .describe("Whether this inquiry is on behalf of a company or a private individual."),
-    fullName: z.string().min(1).describe("The inquirer's full name."),
-    email: z.string().email().describe("The inquirer's email address, for Novoterm to reply to."),
-    phone: z.string().min(1).describe("The inquirer's phone number."),
+    fullName: z.string().min(1).max(CONTACT_FIELD_LIMITS.fullName).describe("The inquirer's full name."),
+    email: z.string().email().max(CONTACT_FIELD_LIMITS.email).describe("The inquirer's email address, for Novoterm to reply to."),
+    phone: z.string().min(1).max(CONTACT_FIELD_LIMITS.phone).describe("The inquirer's phone number."),
     companyName: z
       .string()
+      .max(CONTACT_FIELD_LIMITS.companyName)
       .optional()
       .describe("Company name. Required when inquiryType is 'company'; ignored for 'private'."),
     serviceArea: z
       .enum(["translation", "review", "other"])
       .describe("The desired language service: 'translation' (Översättning), 'review' (Granskning, i.e. proofreading/language review), or 'other'."),
-    message: z.string().optional().describe("Free-text message describing what the inquirer needs."),
+    message: z.string().max(CONTACT_FIELD_LIMITS.message).optional().describe("Free-text message describing what the inquirer needs."),
   },
   annotations: writesExternal,
   handler: async (args) => {
@@ -280,6 +312,11 @@ const submitContactInquiryTool: McpTool = {
         serviceArea: args.serviceArea as "translation" | "review" | "other",
         message: typeof args.message === "string" ? args.message : undefined,
       });
+      if (result.status === "unconfirmed") {
+        return errorContent(
+          `${result.message} Do not tell the user the inquiry was sent, and do not resubmit automatically (it may have arrived). Suggest they contact Novoterm directly instead: ${contact.email.address}, ${contact.phone.label}, or ${contact.form.url}.`,
+        );
+      }
       if (!result.submitted) {
         return errorContent(result.message);
       }
@@ -295,7 +332,11 @@ const submitContactInquiryTool: McpTool = {
   },
 };
 
-/** The full ordered tool registry. Every tool is read-only except submit_contact_inquiry, which sends a real message to Novoterm. */
+/**
+ * The full ordered tool registry. Every tool is read-only except
+ * submit_contact_inquiry, which sends a real message to Novoterm and is only
+ * registered when CONTACT_TOOL_ENABLED is on (config/features.ts).
+ */
 export const mcpTools: McpTool[] = [
   getCompany,
   listServices,
@@ -305,8 +346,10 @@ export const mcpTools: McpTool[] = [
   listCaseStudies,
   getCaseStudy,
   listTeam,
+  listPages,
+  listVideos,
   searchFaq,
   searchArticles,
   getArticle,
-  submitContactInquiryTool,
+  ...(CONTACT_TOOL_ENABLED ? [submitContactInquiryTool] : []),
 ];

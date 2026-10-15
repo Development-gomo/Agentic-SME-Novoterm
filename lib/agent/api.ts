@@ -102,7 +102,7 @@ export const AGENT_API_ENDPOINTS: AgentApiEndpoint[] = [
   endpoint(
     "faq.json",
     "faq",
-    "Frequently asked questions, combining the general FAQ page with every per-service FAQ.",
+    "Frequently asked questions, combining the general FAQ page, the homepage FAQ, and every per-service, per-industry, and per-landing-page FAQ.",
     ["read-only", "faq"],
     "FaqResponse",
   ),
@@ -112,6 +112,20 @@ export const AGENT_API_ENDPOINTS: AgentApiEndpoint[] = [
     "Novoterm's article library: all published articles with their full text, for on-topic questions about translation, AI translation, proofreading, and industry-specific advice.",
     ["read-only", "articles"],
     "ArticlesResponse",
+  ),
+  endpoint(
+    "pages.json",
+    "pages",
+    "Standalone landing pages with their own content — the languages page (/sprak) and the page for production and communications agencies — with sections, example documents, and page-specific FAQs.",
+    ["read-only", "pages"],
+    "PagesResponse",
+  ),
+  endpoint(
+    "videos.json",
+    "videos",
+    "All Novoterm video pages, each with its description, YouTube embed URL, duration, and the related service or industry page.",
+    ["read-only", "videos"],
+    "VideosResponse",
   ),
 ];
 

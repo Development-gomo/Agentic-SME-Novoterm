@@ -1,10 +1,12 @@
 /**
  * Minimal in-memory sliding-window rate limiter.
  *
- * Scoped per serverless instance, not shared across a fleet — acceptable for
- * a public, read-only, low-traffic agent API where the goal is to blunt
- * accidental hammering, not enforce a hard global cap. Swap for a shared
- * store (e.g. Upstash Redis) if traffic grows enough for that gap to matter.
+ * Scoped per serverless instance, not shared across a fleet: counters reset
+ * on a cold start and each warm instance counts separately. That is enough to
+ * blunt accidental hammering of the read-only API, and it puts a per-instance
+ * ceiling on the contact tool (app/mcp/[transport]/route.ts), but it is not a
+ * hard global cap. For one, swap in a shared store (e.g. Upstash Redis /
+ * Vercel KV) or an edge/WAF rate-limit rule on POST /mcp.
  */
 
 export type RateLimitResult = {
@@ -15,6 +17,30 @@ export type RateLimitResult = {
 };
 
 type Bucket = { count: number; windowStart: number };
+
+/**
+ * Which request header carries the real client IP depends on the proxy in
+ * front of the app, and only a header that proxy sets (overwriting any
+ * client-supplied value) can be trusted. RATE_LIMIT_IP_HEADER names it
+ * explicitly. Without it: on Vercel (VERCEL is set by the platform) use
+ * x-vercel-forwarded-for, which Vercel's edge sets itself; anywhere else fall
+ * back to x-real-ip / x-forwarded-for, which are only as trustworthy as the
+ * proxy that sets them.
+ */
+const CLIENT_IP_HEADERS = process.env.RATE_LIMIT_IP_HEADER
+  ? [process.env.RATE_LIMIT_IP_HEADER.toLowerCase()]
+  : process.env.VERCEL
+    ? ["x-vercel-forwarded-for"]
+    : ["x-real-ip", "x-forwarded-for"];
+
+/** The rate-limit key for a request: the first address in the trusted client-IP header. */
+export function clientKey(headers: Headers): string {
+  const raw = CLIENT_IP_HEADERS.map((h) => headers.get(h)).find(Boolean);
+  return raw?.split(",")[0]?.trim() || "unknown";
+}
+
+/** Which header(s) the limiter trusts on this host, for /mcp/health diagnostics. */
+export const CLIENT_IP_SOURCE = CLIENT_IP_HEADERS.join(" | ");
 
 export function createRateLimiter(opts: {
   namespace: string;
@@ -66,11 +92,7 @@ export function createRateLimiter(opts: {
 
   return {
     checkByHeaders(headers: Headers): Promise<RateLimitResult> {
-      const key =
-        headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-        headers.get("x-real-ip") ??
-        "unknown";
-      return Promise.resolve(check(key));
+      return Promise.resolve(check(clientKey(headers)));
     },
   };
 }

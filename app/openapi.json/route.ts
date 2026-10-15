@@ -55,10 +55,10 @@ export function GET() {
     info: {
       title: "Novoterm Agent API",
       description:
-        "Read-only, public JSON API exposing Novoterm Translation's services, industries, team, case studies, and FAQ for AI agents and automated systems. No authentication required.",
+        "Read-only, public JSON API exposing Novoterm Translation's services, industries, landing pages, case studies, videos, team, FAQ, and articles for AI agents and automated systems. No authentication required.",
       version: "1.0.0",
       "x-modified": AGENT_API_MODIFIED,
-      contact: { name: `${SITE_CONFIG.name} — contact form`, url: `${SITE_ORIGIN}/kontakta-oss` },
+      contact: { name: SITE_CONFIG.legalName, email: SITE_CONFIG.contactPoint.email, url: SITE_CONFIG.contactPoint.url },
     },
     servers: [{ url: SITE_ORIGIN }],
     externalDocs: { description: "Machine-readable agent page", url: `${SITE_ORIGIN}/agent` },

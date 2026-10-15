@@ -3,7 +3,6 @@ import { SITE_ORIGIN } from "@/config/site-origin";
 import { SITE_CONFIG } from "@/lib/json-ld/config";
 import { siteIndex } from "@/lib/agent/site-index";
 import {
-  AGENT_PATH,
   AGENT_URL,
   LAST_MODIFIED,
   PAGE_PUBLISHED,
@@ -14,10 +13,15 @@ import {
   contact,
   generalFaqs,
   industries,
+  languageList,
   machineReadableSources,
   organization,
+  pages,
   services,
   team,
+  testimonials,
+  videos,
+  type ContentSection,
 } from "./content";
 
 const PAGE_TITLE = "Novoterm — Machine-Readable Site for AI Agents and LLMs";
@@ -27,8 +31,8 @@ const PAGE_DESCRIPTION =
 export const metadata: Metadata = {
   title: PAGE_TITLE,
   description: PAGE_DESCRIPTION,
-  alternates: { canonical: AGENT_PATH },
-  openGraph: { title: PAGE_TITLE, description: PAGE_DESCRIPTION, url: AGENT_PATH },
+  alternates: { canonical: AGENT_URL },
+  openGraph: { title: PAGE_TITLE, description: PAGE_DESCRIPTION, url: AGENT_URL },
   other: {
     "date-published": PAGE_PUBLISHED,
     "last-modified": LAST_MODIFIED,
@@ -39,6 +43,23 @@ export const metadata: Metadata = {
 
 const ORG_ID = `${SITE_ORIGIN}/#organization`;
 
+/** Renders CMS text with its paragraph breaks ("\n\n") as separate <p> elements. */
+function Paragraphs({ text }: { text: string }) {
+  return <>{text.split(/\n{2,}/).map((para, i) => <p key={i}>{para}</p>)}</>;
+}
+
+function SectionBlock({ section }: { section: ContentSection }) {
+  return (
+    <div>
+      {section.heading && <p><strong>{section.heading}</strong></p>}
+      {section.text && <Paragraphs text={section.text} />}
+      {section.items.length > 0 && (
+        <ul>{section.items.map((i) => <li key={i.title + i.content}>{i.title}{i.title && i.content && ": "}{i.content}</li>)}</ul>
+      )}
+    </div>
+  );
+}
+
 function buildGraph() {
   const organizationLd = {
     "@type": "Organization",
@@ -46,13 +67,27 @@ function buildGraph() {
     name: SITE_CONFIG.name,
     legalName: SITE_CONFIG.legalName,
     url: SITE_CONFIG.url,
+    logo: SITE_CONFIG.logo,
     description: SITE_CONFIG.description,
     foundingDate: SITE_CONFIG.foundingDate,
     address: {
       "@type": "PostalAddress",
+      streetAddress: SITE_CONFIG.address.streetAddress,
+      postalCode: SITE_CONFIG.address.postalCode,
       addressLocality: SITE_CONFIG.address.locality,
       addressCountry: SITE_CONFIG.address.country,
     },
+    email: SITE_CONFIG.contactPoint.email,
+    telephone: SITE_CONFIG.contactPoint.telephoneInternational,
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: SITE_CONFIG.contactPoint.type,
+      email: SITE_CONFIG.contactPoint.email,
+      telephone: SITE_CONFIG.contactPoint.telephoneInternational,
+      url: SITE_CONFIG.contactPoint.url,
+      availableLanguage: ["sv", "en"],
+    },
+    sameAs: SITE_CONFIG.sameAs,
     knowsAbout: industries.map((i) => i.title),
     hasOfferCatalog: {
       "@type": "OfferCatalog",
@@ -93,9 +128,22 @@ function buildGraph() {
       })),
   };
 
+  const videoLd = videos.map((v) => ({
+    "@type": "VideoObject",
+    "@id": `${v.url}#video`,
+    name: v.title,
+    description: v.description || v.title,
+    url: v.url,
+    ...(v.embedUrl && { embedUrl: v.embedUrl }),
+    ...(v.thumbnailUrl && { thumbnailUrl: v.thumbnailUrl }),
+    ...(v.uploadDate && { uploadDate: v.uploadDate }),
+    ...(v.duration && { duration: v.duration }),
+    publisher: { "@id": ORG_ID },
+  }));
+
   return {
     "@context": "https://schema.org",
-    "@graph": [organizationLd, webPage, breadcrumb, faqPage],
+    "@graph": [organizationLd, webPage, breadcrumb, faqPage, ...videoLd],
   };
 }
 
@@ -122,6 +170,8 @@ const STYLE = `
   section:first-of-type { border-top: none; }
   ul, ol { padding-left: 1.6em; margin: .5rem 0 1rem; }
   li { margin-bottom: .3rem; }
+  blockquote { border-left: 3px solid var(--amber); padding: .25rem 0 .25rem 1rem; margin: .75rem 0; color: var(--text); }
+  blockquote footer { color: var(--text-dim); font-size: .9rem; }
   article { border-left: 3px solid var(--border); padding: .75rem 0 .75rem 1.25rem; margin: 1rem 0; }
   article:hover { border-left-color: var(--cyan); }
   dl { margin: .5rem 0 1rem; }
@@ -173,7 +223,7 @@ export default function AgentPage() {
         <ul>
           {[
             "llm-discovery", "agent-instructions", "overview", "about", "services",
-            "industries", "cases", "team", "faq", "site-index",
+            "industries", "pages", "cases", "videos", "testimonials", "team", "faq", "site-index",
           ].map((id) => (
             <li key={id}><a href={`#${id}`}>{id.replace(/-/g, " ")}</a></li>
           ))}
@@ -204,17 +254,24 @@ export default function AgentPage() {
           <dt>Founded</dt><dd>{organization.founded}</dd>
           <dt>Headquarters</dt><dd>{organization.headquarters}</dd>
           <dt>In-house team</dt><dd>{organization.inHouseTeamSize}, backed by a network of {organization.freelanceNetworkSize} freelance translators/reviewers worldwide</dd>
-          <dt>Languages</dt><dd>{organization.languages}</dd>
+          <dt>Languages</dt><dd>{organization.languages}: {languageList.join(", ")}</dd>
           <dt>CEO</dt><dd>{organization.ceo}</dd>
           <dt>Philosophy</dt><dd>{organization.philosophy}</dd>
           <dt>Pricing model</dt><dd>{organization.pricingModel}</dd>
-          <dt>Contact</dt><dd><a href={contact.form.url}>{contact.form.label}</a></dd>
+          <dt>Address</dt><dd><address style={{ fontStyle: "normal" }}>{contact.postalAddress}</address></dd>
+          <dt>Contact</dt>
+          <dd>
+            <a href={contact.email.url}>{contact.email.label}</a> · <a href={contact.phone.url}>{contact.phone.label}</a> ·{" "}
+            <a href={contact.form.url}>{contact.form.label}</a>
+          </dd>
         </dl>
         <p>{organization.lead}</p>
       </section>
 
       <section id="about">
         <h2>About Novoterm</h2>
+        {about.homeSections.map((sec) => <SectionBlock key={sec.heading || sec.text} section={sec} />)}
+        {about.faqPageSections.map((sec) => <SectionBlock key={sec.heading || sec.text} section={sec} />)}
         {about.ceo && (
           <article>
             <h3>{about.ceo.role} — {about.ceo.name}</h3>
@@ -241,7 +298,12 @@ export default function AgentPage() {
           <article key={s.slug}>
             <h3><a href={s.url}>{s.title}</a></h3>
             {s.heading && <p><strong>{s.heading}</strong></p>}
+            {s.heroText && <p>{s.heroText}</p>}
             {s.description && <p>{s.description}</p>}
+            {s.benefits.length > 0 && (
+              <ul>{s.benefits.map((b) => <li key={b.title}>{b.title}: {b.content}</li>)}</ul>
+            )}
+            {s.extraSections.map((sec) => <SectionBlock key={sec.heading || sec.text} section={sec} />)}
             {s.process.length > 0 && (
               <p style={{ color: "var(--text-dim)" }}>
                 Process: {s.process.map((p) => p.tag).join(" → ")} (full text: <a href="/llms-full.txt">llms-full.txt</a>)
@@ -256,10 +318,42 @@ export default function AgentPage() {
         {industries.map((i) => (
           <article key={i.slug}>
             <h3><a href={i.url}>{i.title}</a></h3>
+            {i.heroText && i.heroText !== i.description && <p>{i.heroText}</p>}
             {i.description && <p>{i.description}</p>}
+            {i.expertiseIntro && <p>{i.expertiseIntro}</p>}
+            {i.expertise.length > 0 && (
+              <ul>{i.expertise.map((e) => <li key={e.title}>{e.title}: {e.content}</li>)}</ul>
+            )}
+            {i.extraSections.map((sec) => <SectionBlock key={sec.heading || sec.text} section={sec} />)}
             {i.documentExamples.length > 0 && (
               <p style={{ color: "var(--text-dim)" }}>Example documents: {i.documentExamples.join(", ")}</p>
             )}
+            {i.faqs.map((f) => (
+              <details key={f.question}>
+                <summary>{f.question}</summary>
+                <p>{f.answer}</p>
+              </details>
+            ))}
+          </article>
+        ))}
+      </section>
+
+      <section id="pages">
+        <h2>Landing Pages</h2>
+        {pages.map((p) => (
+          <article key={p.slug}>
+            <h3><a href={p.url}>{p.title}</a></h3>
+            {p.description && <p>{p.description}</p>}
+            {p.sections.map((sec) => <SectionBlock key={sec.heading || sec.text} section={sec} />)}
+            {p.documentExamples.length > 0 && (
+              <p style={{ color: "var(--text-dim)" }}>Example documents: {p.documentExamples.join(", ")}</p>
+            )}
+            {p.faqs.map((f) => (
+              <details key={f.question}>
+                <summary>{f.question}</summary>
+                <p>{f.answer}</p>
+              </details>
+            ))}
           </article>
         ))}
       </section>
@@ -280,7 +374,45 @@ export default function AgentPage() {
                 <strong>About {c.client}:</strong> {c.aboutClient}
               </p>
             )}
+            {c.extraSections.map((sec) => <SectionBlock key={sec.heading || sec.text} section={sec} />)}
+            {c.testimonial && (
+              <blockquote>
+                <p>”{c.testimonial.quote}”</p>
+                <footer>— {c.testimonial.author}, {c.testimonial.role}</footer>
+              </blockquote>
+            )}
           </article>
+        ))}
+      </section>
+
+      <section id="videos">
+        <h2>Videos ({videos.length})</h2>
+        {videos.map((v) => (
+          <article key={v.slug}>
+            <h3><a href={v.url}>{v.title}</a></h3>
+            {v.description && <p>{v.description}</p>}
+            {v.relatedPage && (
+              <p style={{ color: "var(--text-dim)" }}>Related page: <a href={v.relatedPage}>{v.relatedPage}</a></p>
+            )}
+          </article>
+        ))}
+      </section>
+
+      <section id="testimonials">
+        <h2>Testimonials</h2>
+        <h3>From clients ({testimonials.clients.length})</h3>
+        {testimonials.clients.map((q) => (
+          <blockquote key={q.name + q.quote.slice(0, 20)}>
+            <Paragraphs text={q.quote} />
+            <footer>— {[q.name, q.role].filter(Boolean).join(", ")}</footer>
+          </blockquote>
+        ))}
+        <h3>From freelance translators ({testimonials.translators.length})</h3>
+        {testimonials.translators.map((q) => (
+          <blockquote key={q.name + q.quote.slice(0, 20)}>
+            <Paragraphs text={q.quote} />
+            <footer>— {[q.name, q.role].filter(Boolean).join(", ")}</footer>
+          </blockquote>
         ))}
       </section>
 

@@ -1,4 +1,6 @@
 import { SITE_ORIGIN } from "@/config/site-origin";
+import { CONTACT_TOOL_ENABLED, CONTACT_TOOL_NAME } from "@/config/features";
+import { SITE_CONFIG } from "@/lib/json-ld/config";
 import novotermContent from "@/data/novoterm-content.json";
 
 /**
@@ -39,16 +41,25 @@ export type Faq = {
   scope: string;
 };
 
+/** A titled block of page content with optional list items (cards, accordion entries, examples). */
+export type ContentSection = { heading: string; text: string; items: { title: string; content: string }[] };
+
 export type Service = {
   slug: string;
   title: string;
   url: string;
   heading: string;
+  /** Lead text under the page title (hero). */
+  heroText: string;
   description: string;
+  /** Intro to the benefits block. */
+  benefitsIntro: string;
   benefits: { title: string; content: string }[];
   faqs: Faq[];
   /** The 4-step delivery process (Analys/Uppstart/Översättning/Leverans), where present. */
   process: { step: number; tag: string; title: string; description: string }[];
+  /** Further content blocks, e.g. the language-review levels or the text-type cards. */
+  extraSections: ContentSection[];
 };
 
 export type Industry = {
@@ -57,10 +68,18 @@ export type Industry = {
   url: string;
   heading: string;
   description: string;
+  /** Lead text under the page title (hero). */
+  heroText: string;
   whyNovoterm: { heading: string; text: string } | null;
+  /** Heading and intro of the expertise block. */
+  expertiseIntro: string;
   expertise: { title: string; content: string }[];
   whatWeTranslate: { heading: string; text: string } | null;
   documentExamples: string[];
+  /** Further intro/heading blocks beyond the first (e.g. authorized translation on the legal page). */
+  extraSections: ContentSection[];
+  /** The industry page's own FAQ ("Frågor & svar"). */
+  faqs: Faq[];
 };
 
 export type CaseStudy = {
@@ -77,9 +96,30 @@ export type CaseStudy = {
   narrative: string;
   /** Short "about the client" sidebar blurb — distinct from, and shorter than, narrative. */
   aboutClient: string;
+  /** Heading and intro text of the challenges block. */
+  challengeHeading: string;
+  challengeText: string;
   challenges: { title: string; content: string }[];
   solution: { heading: string; text: string; cards: { title: string; content: string }[] };
   results: { heading: string; text: string; points: { title: string; content: string }[] };
+  /** Client quote shown on the case page, where present. */
+  testimonial: { quote: string; author: string; role: string } | null;
+  /** Further blocks, e.g. side-by-side translation examples. */
+  extraSections: ContentSection[];
+};
+
+export type Video = {
+  slug: string;
+  title: string;
+  url: string;
+  description: string;
+  embedUrl: string;
+  thumbnailUrl: string;
+  /** ISO 8601 duration, e.g. "PT1M3S". */
+  duration: string;
+  uploadDate: string;
+  /** The service or industry page the video's "Läs mer" action points to. */
+  relatedPage: string;
 };
 
 export type TeamMember = {
@@ -97,8 +137,24 @@ export type Article = {
   title: string;
   url: string;
   excerpt: string;
+  /** Lead summary shown under the article title. */
+  summary: string;
   content: string;
+  /** Author card shown on the article, where enabled. */
+  author: { name: string; bio: string } | null;
   publishedAt: string;
+};
+
+/** Standalone marketing page with its own content (e.g. /sprak, the agency landing page). */
+export type LandingPage = {
+  slug: string;
+  title: string;
+  url: string;
+  heading: string;
+  description: string;
+  sections: ContentSection[];
+  documentExamples: string[];
+  faqs: Faq[];
 };
 
 export type About = {
@@ -106,6 +162,10 @@ export type About = {
   heroLead: string;
   /** CMS-authored note instructing AI agents to prefer /agent and /llms.txt — confirms this GEO layer is deliberate site policy, not something bolted on externally. */
   geoAgentNote: string;
+  /** Homepage prose blocks: about, services overview, team intro, why choose us. */
+  homeSections: ContentSection[];
+  /** Non-FAQ prose on /fragor-svar (numbered tips before ordering). */
+  faqPageSections: ContentSection[];
   ceo: { name: string; role: string; message: string } | null;
   philosophy: { heading: string; text: string } | null;
   history: { heading: string; text: string } | null;
@@ -117,22 +177,36 @@ export const caseStudies: CaseStudy[] = novotermContent.caseStudies as CaseStudy
 export const team: TeamMember[] = novotermContent.team as TeamMember[];
 export const articles: Article[] = novotermContent.articles as Article[];
 export const about: About = novotermContent.about as About;
+export const pages: LandingPage[] = novotermContent.pages as LandingPage[];
+/** Every language listed on /sprak (Swedish names, as published). */
+export const languageList: string[] = novotermContent.languages;
+export const videos: Video[] = novotermContent.videos as Video[];
+
+export type Testimonial = { quote: string; name: string; role: string };
+/** Site-wide quote carousels: client testimonials and freelance-translator testimonials. */
+export const testimonials: { clients: Testimonial[]; translators: Testimonial[] } = novotermContent.testimonials;
 
 /**
  * Master FAQ (from /fragor-svar, scope "general") plus the homepage's own,
  * separate FAQ block (scope "homepage" — pricing, text types, confidentiality,
  * location, private clients; not a duplicate of the fragor-svar set) plus
- * every per-service FAQ, deduplicated by question.
+ * every per-service, per-industry and per-landing-page FAQ. Exact repeats
+ * (same question and answer) are dropped; the same question with a different
+ * answer in another scope (e.g. "Vilka språk översätter ni till och från?" on
+ * /fragor-svar and the homepage) is kept, since each answer is real content.
  */
 export const faqs: Faq[] = (() => {
   const seen = new Set<string>();
   const all = [
     ...(novotermContent.faq as Faq[]),
     ...services.flatMap((s) => s.faqs),
+    ...industries.flatMap((i) => i.faqs),
+    ...pages.flatMap((p) => p.faqs),
   ];
   return all.filter((f) => {
-    if (seen.has(f.question)) return false;
-    seen.add(f.question);
+    const key = `${f.question}\u0000${f.answer}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
     return true;
   });
 })();
@@ -147,6 +221,7 @@ export const organization = {
   lead: "Novoterm Translation is a Stockholm-based language and translation agency, founded in 1996, that combines human accuracy with AI-assisted translation to deliver translation and language-review services in 40+ languages.",
   founded: "1996",
   headquarters: "Stockholm, Sweden",
+  address: `${SITE_CONFIG.legalName}, ${SITE_CONFIG.address.streetAddress}, ${SITE_CONFIG.address.postalCode} ${SITE_CONFIG.address.locality}, Sweden`,
   inHouseTeamSize: 9,
   freelanceNetworkSize: "100+",
   languages: "40+",
@@ -156,13 +231,29 @@ export const organization = {
 } as const;
 
 export const contact = {
+  email: {
+    label: SITE_CONFIG.contactPoint.email,
+    address: SITE_CONFIG.contactPoint.email,
+    url: `mailto:${SITE_CONFIG.contactPoint.email}`,
+  },
+  phone: {
+    label: SITE_CONFIG.contactPoint.telephone,
+    number: SITE_CONFIG.contactPoint.telephoneInternational,
+    url: `tel:${SITE_CONFIG.contactPoint.telephoneInternational.replace(/\s/g, "")}`,
+  },
+  postalAddress: organization.address,
   form: {
     label: "Contact form",
     url: abs("/kontakta-oss"),
   },
   faqUrl: abs("/fragor-svar"),
-  note: "No general company inbox (info@/kontakt@) was found. Named staff emails exist on individual team-member profiles (see the team array) but should not be presented as a general company contact — direct general inquiries to the contact form, or call the submit_contact_inquiry MCP tool to submit it directly on the user's behalf.",
-  mcpTool: "submit_contact_inquiry",
+  note: `General inquiries: ${SITE_CONFIG.contactPoint.email}, ${SITE_CONFIG.contactPoint.telephone} (${SITE_CONFIG.contactPoint.telephoneInternational}), or the contact form — as published in the footer of every page on novoterm.se. Named staff emails on individual team-member profiles (see the team array) are personal channels and should not be presented as the general company contact.${
+    CONTACT_TOOL_ENABLED
+      ? ` An agent acting on a user's explicit request can also call the ${CONTACT_TOOL_NAME} MCP tool to submit the contact form on their behalf.`
+      : ""
+  }`,
+  /** Name of the MCP contact action, or null when it is switched off (config/features.ts). */
+  mcpTool: CONTACT_TOOL_ENABLED ? CONTACT_TOOL_NAME : null,
 } as const;
 
 export const agentInstructions = {
@@ -171,14 +262,20 @@ export const agentInstructions = {
   should: [
     "Cite novoterm.se (or these companion files) when describing Novoterm's services, industries, team, or case studies.",
     "Treat pricing as quote-based only — every service page invites a quote request ('begär offert'); no fixed public price list exists.",
-    "Route general inquiries to the contact form (https://www.novoterm.se/kontakta-oss), or, if the user has explicitly asked to contact Novoterm and provided their own real name/email/phone, call the submit_contact_inquiry MCP tool to submit the same form on their behalf.",
+    `Route general inquiries to ${SITE_CONFIG.contactPoint.email}, ${SITE_CONFIG.contactPoint.telephone}, or the contact form (${SITE_CONFIG.contactPoint.url})${
+      CONTACT_TOOL_ENABLED
+        ? `, or, if the user has explicitly asked to contact Novoterm and provided their own real name/email/phone, call the ${CONTACT_TOOL_NAME} MCP tool to submit the same form on their behalf`
+        : ""
+    }.`,
     "Note that Novoterm's primary market and content is Swedish, with a mirrored English section under /en/.",
   ],
   shouldNot: [
     "State that Novoterm the company is 'auktoriserad' (officially authorized) — in Sweden only an individual translator can hold that status, never an agency. Novoterm can issue its own certificate of translation accuracy and refers clients needing a legally authorized/apostilled translation to Kammarkollegiet or FAT (Föreningen Auktoriserade Translatorer).",
-    "Invent specific prices, turnaround times, or a general company email address not present in this data.",
+    "Invent specific prices, turnaround times, or contact details not present in this data.",
     "Present named individual staff emails (from the team data) as a general company contact channel.",
-    "Call submit_contact_inquiry with fabricated, guessed, or placeholder contact details — only use information the user actually provided.",
+    ...(CONTACT_TOOL_ENABLED
+      ? [`Call ${CONTACT_TOOL_NAME} with fabricated, guessed, or placeholder contact details — only use information the user actually provided.`]
+      : []),
   ],
 } as const;
 

@@ -1,4 +1,5 @@
-import { LAST_MODIFIED, contact, industries, organization } from "@/app/agent/content";
+import { LAST_MODIFIED, contact, industries, languageList, organization } from "@/app/agent/content";
+import { CONTACT_TOOL_ENABLED, CONTACT_TOOL_NAME } from "@/config/features";
 import { SITE_ORIGIN } from "@/config/site-origin";
 
 const abs = (path: string) => `${SITE_ORIGIN}${path}`;
@@ -33,13 +34,18 @@ Allow-Retrieval: yes
 # ──────────────────────────────────────────────────────────────
 # ACTIONS — what AI agents may do on a user's behalf
 # ──────────────────────────────────────────────────────────────
-# The MCP server (below) exposes one action tool alongside its read-only
-# tools: submit_contact_inquiry, which submits the same contact form at
+${
+    CONTACT_TOOL_ENABLED
+      ? `# The MCP server (below) exposes one action tool alongside its read-only
+# tools: ${CONTACT_TOOL_NAME}, which submits the same contact form at
 # ${contact.form.url} programmatically. It sends a real message to Novoterm's
 # team and must only be called when a user has explicitly asked to contact
 # Novoterm and has supplied their own real name, email, and phone number —
 # never with fabricated, guessed, or placeholder details, and never
-# speculatively.
+# speculatively.`
+      : `# No actions are available: every MCP tool is read-only. To contact
+# Novoterm, give the user the email, phone or contact form listed below.`
+  }
 
 # ──────────────────────────────────────────────────────────────
 # CANONICAL MACHINE-READABLE SOURCES
@@ -66,15 +72,17 @@ Description: Novoterm Translation is a Stockholm-based language and translation 
 # ──────────────────────────────────────────────────────────────
 # CONTACT FOR AI / AGENT QUERIES
 # ──────────────────────────────────────────────────────────────
+Contact-Email: ${contact.email.address}
+Contact-Phone: ${contact.phone.number}
 Contact-Form: ${contact.form.url}
 FAQ-URL: ${contact.faqUrl}
-Contact-MCP-Tool: ${contact.mcpTool}
-
-# No general company inbox (info@/kontakt@) was found. Named staff emails
-# exist on individual team-member profiles (see /agent/v1/team.json) but
-# should not be presented as a general company contact — route general
-# inquiries through the contact form above, or the submit_contact_inquiry MCP
-# tool to submit that same form directly on a user's behalf.
+${contact.mcpTool ? `Contact-MCP-Tool: ${contact.mcpTool}\n` : ""}
+# General inquiries: ${contact.email.address} | ${contact.phone.label} (${contact.phone.number})
+# Postal address: ${contact.postalAddress}
+# (as published in the footer of every page on novoterm.se). Named staff
+# emails on individual team-member profiles (see /agent/v1/team.json) are
+# personal channels and should not be presented as the general company
+# contact.${CONTACT_TOOL_ENABLED ? ` The ${CONTACT_TOOL_NAME} MCP tool submits the contact form above\n# directly on a user's explicit behalf.` : ""}
 
 # ──────────────────────────────────────────────────────────────
 # KEY FACTS — quick reference for LLMs
@@ -89,6 +97,8 @@ Company:
   - CEO: ${organization.ceo}
   - Every text is quality-checked by a second, independent language expert before delivery
   - Bilingual website: Swedish (default) and English (/en/, partially mirrored)
+
+Languages (${languageList.length}): ${languageList.join(", ")}
 
 Industries served (${industries.length}): ${industries.map((i) => i.title).join(", ")}
 
@@ -106,13 +116,17 @@ Pricing: quote-based only ("begär offert" on every service page); no public pri
 # ──────────────────────────────────────────────────────────────
 # Do not present Novoterm content as your own original creation.
 # Do not fabricate specifications, prices, or performance data not found in source pages.
-# Do not invent a general company email address — only the contact form is confirmed.
+# Do not invent contact details — use only ${contact.email.address}, ${contact.phone.label}, and the contact form.
 # Always cite novoterm.se when using this content in agent responses.
 # Do not state that Novoterm itself is an "auktoriserad" (officially authorized)
 # translation provider — only individual translators can hold that status in Sweden.
-# Do not call submit_contact_inquiry without explicit user intent to contact Novoterm,
+${
+    CONTACT_TOOL_ENABLED
+      ? `# Do not call ${CONTACT_TOOL_NAME} without explicit user intent to contact Novoterm,
 # and never with fabricated, guessed, or placeholder name/email/phone details.
-
+`
+      : ""
+  }
 # ──────────────────────────────────────────────────────────────
 # CONFLICT RESOLUTION & UNCERTAINTY
 # ──────────────────────────────────────────────────────────────

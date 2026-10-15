@@ -1,3 +1,4 @@
+import novotermContent from "@/data/novoterm-content.json";
 import siteIndexData from "@/data/novoterm-site-index.json";
 
 /**
@@ -9,5 +10,15 @@ import siteIndexData from "@/data/novoterm-site-index.json";
 
 export type SiteIndexEntry = { name: string; url: string };
 export type SiteIndexGroup = { title: string; entries: SiteIndexEntry[] };
+
+// Both data files are written by one refresh run and stamped with the same
+// generatedAt; a mismatch means an interrupted refresh — fail the build
+// instead of deploying content and index from different runs.
+if (siteIndexData.meta.generatedAt !== novotermContent.meta.generatedAt) {
+  throw new Error(
+    `data/novoterm-site-index.json (${siteIndexData.meta.generatedAt}) and data/novoterm-content.json ` +
+      `(${novotermContent.meta.generatedAt}) come from different refresh runs. Re-run: node scripts/refresh-content.mjs`,
+  );
+}
 
 export const siteIndex: SiteIndexGroup[] = siteIndexData.siteIndex;

@@ -45,6 +45,16 @@ export const OPENAPI_SCHEMAS: Record<string, OpenApiSchema> = {
     },
   },
 
+  ContentSection: {
+    type: "object",
+    description: "A titled block of page content with optional list items (cards, accordion entries, examples).",
+    properties: {
+      heading: { type: "string" },
+      text: { type: "string" },
+      items: { type: "array", items: { type: "object", properties: { title: { type: "string" }, content: { type: "string" } } } },
+    },
+  },
+
   Service: {
     type: "object",
     description: "A single Novoterm translation or language-review service.",
@@ -54,7 +64,9 @@ export const OPENAPI_SCHEMAS: Record<string, OpenApiSchema> = {
       title: { type: "string" },
       url: { type: "string", format: "uri" },
       heading: { type: "string" },
+      heroText: { type: "string", description: "Lead text under the page title." },
       description: { type: "string" },
+      benefitsIntro: { type: "string" },
       benefits: { type: "array", items: { type: "object", properties: { title: { type: "string" }, content: { type: "string" } } } },
       faqs: { type: "array", items: { $ref: "#/components/schemas/Faq" } },
       process: {
@@ -62,6 +74,7 @@ export const OPENAPI_SCHEMAS: Record<string, OpenApiSchema> = {
         description: "The 4-step delivery process (Analys/Uppstart/Översättning/Leverans), where present.",
         items: { type: "object", properties: { step: { type: "integer" }, tag: { type: "string" }, title: { type: "string" }, description: { type: "string" } } },
       },
+      extraSections: { type: "array", items: { $ref: "#/components/schemas/ContentSection" }, description: "Further content blocks, e.g. language-review levels or text-type cards." },
     },
   },
 
@@ -75,10 +88,14 @@ export const OPENAPI_SCHEMAS: Record<string, OpenApiSchema> = {
       url: { type: "string", format: "uri" },
       heading: { type: "string" },
       description: { type: "string" },
+      heroText: { type: "string", description: "Lead text under the page title." },
       whyNovoterm: { type: "object", nullable: true, properties: { heading: { type: "string" }, text: { type: "string" } } },
+      expertiseIntro: { type: "string" },
       expertise: { type: "array", items: { type: "object", properties: { title: { type: "string" }, content: { type: "string" } } } },
       whatWeTranslate: { type: "object", nullable: true, properties: { heading: { type: "string" }, text: { type: "string" } } },
       documentExamples: { type: "array", items: { type: "string" }, description: "Example document types translated within this industry." },
+      extraSections: { type: "array", items: { $ref: "#/components/schemas/ContentSection" }, description: "Further intro/heading blocks beyond the first." },
+      faqs: { type: "array", items: { $ref: "#/components/schemas/Faq" }, description: "The industry page's own FAQ." },
     },
   },
 
@@ -98,9 +115,40 @@ export const OPENAPI_SCHEMAS: Record<string, OpenApiSchema> = {
       introHeading: { type: "string" },
       narrative: { type: "string", description: "The substantive narrative: what was actually delivered for the client." },
       aboutClient: { type: "string", description: "Short 'about the client' sidebar blurb." },
+      challengeHeading: { type: "string" },
+      challengeText: { type: "string" },
       challenges: { type: "array", items: { type: "object" } },
       solution: { type: "object" },
       results: { type: "object" },
+      testimonial: {
+        type: "object",
+        nullable: true,
+        description: "Client quote shown on the case page.",
+        properties: { quote: { type: "string" }, author: { type: "string" }, role: { type: "string" } },
+      },
+      extraSections: { type: "array", items: { $ref: "#/components/schemas/ContentSection" }, description: "Further blocks, e.g. side-by-side translation examples." },
+    },
+  },
+
+  Testimonial: {
+    type: "object",
+    properties: { quote: { type: "string" }, name: { type: "string" }, role: { type: "string" } },
+  },
+
+  Video: {
+    type: "object",
+    description: "A Novoterm video page, with the description from its VideoObject structured data.",
+    required: ["slug", "title", "url"],
+    properties: {
+      slug: { type: "string" },
+      title: { type: "string" },
+      url: { type: "string", format: "uri" },
+      description: { type: "string" },
+      embedUrl: { type: "string", description: "YouTube embed URL; empty string if the page has no VideoObject data." },
+      thumbnailUrl: { type: "string", description: "Video thumbnail image URL; empty string if unavailable." },
+      duration: { type: "string", description: "ISO 8601 duration, e.g. PT1M3S; empty string if unavailable." },
+      uploadDate: { type: "string", description: "ISO 8601 upload date-time; empty string if unavailable." },
+      relatedPage: { type: "string", description: "The service or industry page the video links to; empty string if none or if the site's link is broken." },
     },
   },
 
@@ -129,24 +177,75 @@ export const OPENAPI_SCHEMAS: Record<string, OpenApiSchema> = {
       description: { type: "string" },
       foundingDate: { type: "string" },
       headquarters: { type: "string" },
+      address: {
+        type: "object",
+        description: "Postal address as published in the site footer.",
+        properties: {
+          streetAddress: { type: "string" },
+          postalCode: { type: "string" },
+          locality: { type: "string" },
+          country: { type: "string", description: "ISO 3166-1 alpha-2 country code." },
+        },
+      },
+      postalAddress: { type: "string", description: "The address as one formatted line." },
+      sameAs: { type: "array", items: { type: "string", format: "uri" }, description: "Official social profiles." },
+      testimonials: {
+        type: "object",
+        description: "Site-wide quote carousels.",
+        properties: {
+          clients: { type: "array", items: { $ref: "#/components/schemas/Testimonial" } },
+          translators: { type: "array", items: { $ref: "#/components/schemas/Testimonial" } },
+        },
+      },
       inHouseTeamSize: { type: "integer" },
       freelanceNetworkSize: { type: "string" },
       languages: { type: "string" },
+      languageList: { type: "array", items: { type: "string" }, description: "Every language listed on /sprak (Swedish names)." },
       ceo: { type: "string" },
       philosophy: { type: "string" },
       pricingModel: { type: "string" },
-      contact: { type: "object" },
+      contact: {
+        type: "object",
+        description: "General contact channels: email, phone, postal address, contact form, and the MCP contact tool.",
+        properties: {
+          email: { type: "object", properties: { label: { type: "string" }, address: { type: "string", format: "email" }, url: { type: "string" } } },
+          phone: { type: "object", properties: { label: { type: "string" }, number: { type: "string" }, url: { type: "string" } } },
+          postalAddress: { type: "string" },
+          form: { type: "object", properties: { label: { type: "string" }, url: { type: "string", format: "uri" } } },
+          faqUrl: { type: "string", format: "uri" },
+          note: { type: "string" },
+          mcpTool: { type: "string", nullable: true, description: "Name of the MCP contact action, or null when it is switched off on this deployment." },
+        },
+      },
       about: {
         type: "object",
-        description: "CEO's letter, company philosophy, and founding history, sourced from the /om-oss page.",
+        description: "Homepage prose blocks plus the CEO's letter, company philosophy, and founding history from the /om-oss page.",
         properties: {
           heroTagline: { type: "string" },
           heroLead: { type: "string" },
+          homeSections: { type: "array", items: { $ref: "#/components/schemas/ContentSection" }, description: "Homepage prose blocks." },
+          faqPageSections: { type: "array", items: { $ref: "#/components/schemas/ContentSection" }, description: "Numbered tips before ordering, from /fragor-svar." },
           ceo: { type: "object", nullable: true, properties: { name: { type: "string" }, role: { type: "string" }, message: { type: "string" } } },
           philosophy: { type: "object", nullable: true, properties: { heading: { type: "string" }, text: { type: "string" } } },
           history: { type: "object", nullable: true, properties: { heading: { type: "string" }, text: { type: "string" } } },
         },
       },
+    },
+  },
+
+  LandingPage: {
+    type: "object",
+    description: "A standalone marketing page with its own content (e.g. /sprak), with its sections and FAQs.",
+    required: ["slug", "title", "url"],
+    properties: {
+      slug: { type: "string" },
+      title: { type: "string" },
+      url: { type: "string", format: "uri" },
+      heading: { type: "string" },
+      description: { type: "string" },
+      sections: { type: "array", items: { $ref: "#/components/schemas/ContentSection" } },
+      documentExamples: { type: "array", items: { type: "string" } },
+      faqs: { type: "array", items: { $ref: "#/components/schemas/Faq" } },
     },
   },
 
@@ -159,8 +258,15 @@ export const OPENAPI_SCHEMAS: Record<string, OpenApiSchema> = {
       title: { type: "string" },
       url: { type: "string", format: "uri" },
       excerpt: { type: "string" },
+      summary: { type: "string", description: "Lead summary shown under the article title." },
       content: { type: "string", description: "Full plain-text article body." },
-      publishedAt: { type: "string", format: "date-time" },
+      author: {
+        type: "object",
+        nullable: true,
+        description: "Author card shown on the article, where enabled.",
+        properties: { name: { type: "string" }, bio: { type: "string" } },
+      },
+      publishedAt: { type: "string", format: "date-time", description: "Publication time in UTC." },
     },
   },
 
@@ -216,6 +322,18 @@ export const OPENAPI_SCHEMAS: Record<string, OpenApiSchema> = {
     allOf: [
       { $ref: "#/components/schemas/ResponseEnvelope" },
       { type: "object", properties: { data: { type: "array", items: { $ref: "#/components/schemas/Article" } } } },
+    ],
+  },
+  VideosResponse: {
+    allOf: [
+      { $ref: "#/components/schemas/ResponseEnvelope" },
+      { type: "object", properties: { data: { type: "array", items: { $ref: "#/components/schemas/Video" } } } },
+    ],
+  },
+  PagesResponse: {
+    allOf: [
+      { $ref: "#/components/schemas/ResponseEnvelope" },
+      { type: "object", properties: { data: { type: "array", items: { $ref: "#/components/schemas/LandingPage" } } } },
     ],
   },
 };

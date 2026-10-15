@@ -20,6 +20,14 @@ import { WP_BACKEND_ORIGIN } from "@/config/site-origin";
  *   [select* area first_as_label "..." "Översättning" "Granskning" "Annat"]
  *   [textarea message] [file ...] [hidden page-title] [hidden page-url]
  *
+ * RECAPTCHA (2026-10-14): the live form definition now also contains
+ * [recaptcha size:normal theme:light align:left]. If the backend enforces
+ * it for custom-cf7/v1/submit, submissions from this module carry no token
+ * and are rejected; the rejection is surfaced to the agent as a failed
+ * submission (see interpretResponse) rather than a false success. Novoterm
+ * needs to exempt this server-side path from reCAPTCHA or confirm it is not
+ * enforced there — this module deliberately does not try to bypass it.
+ *
  * NOTE ON VERIFICATION: this has been validated against the live schema
  * endpoints (custom-cf7/v1/forms, custom-cf7/v1/form/321) but a real
  * end-to-end submission has deliberately not been fired during development,
@@ -28,6 +36,28 @@ import { WP_BACKEND_ORIGIN } from "@/config/site-origin";
  */
 
 const CONTACT_FORM_ID = 321;
+
+/**
+ * Optional shared secret for the WordPress submit route (check D1). If the
+ * backend enforces reCAPTCHA on custom-cf7/v1/submit, Novoterm's developer can
+ * let requests carrying this key skip only the reCAPTCHA step. The same value
+ * must be configured on both sides. It is sent only to SUBMIT_URL (Novoterm's
+ * own backend) and never logged or returned.
+ */
+const BACKEND_KEY_HEADER = "X-Novoterm-Agent-Key";
+const BACKEND_KEY = process.env.CONTACT_BACKEND_KEY;
+
+/** Upper bound for the backend call, so a hung upstream cannot hold the MCP request open. */
+const SUBMIT_TIMEOUT_MS = 15_000;
+
+/** Field length limits — generous for real inquiries, small enough to stop payload stuffing. */
+export const CONTACT_FIELD_LIMITS = {
+  fullName: 200,
+  email: 254,
+  phone: 40,
+  companyName: 200,
+  message: 5_000,
+} as const;
 const SUBMIT_URL = `${WP_BACKEND_ORIGIN}/wp-json/custom-cf7/v1/submit/${CONTACT_FORM_ID}`;
 
 /** Origin page recorded on the submission — our own agent surface, since no human loaded the real /kontakta-oss page for an agent-submitted inquiry. */
@@ -50,7 +80,13 @@ export type ContactInquiryInput = {
 export type ContactInquiryResult = {
   submitted: boolean;
   /** Best-effort interpretation of the upstream response; see the module doc note on verification. */
-  status: "sent" | "rejected" | "unknown";
+  /**
+   * "sent": the backend explicitly confirmed delivery. "rejected": it
+   * explicitly refused. "unconfirmed": no explicit confirmation either way
+   * (unrecognised 2xx body, non-2xx, timeout) — the inquiry may or may not
+   * have been delivered, so it is never reported as submitted.
+   */
+  status: "sent" | "rejected" | "unconfirmed";
   message: string;
   httpStatus: number;
   raw: unknown;
@@ -77,6 +113,12 @@ function validate(input: ContactInquiryInput): void {
   }
   if (input.inquiryType === "company" && !input.companyName?.trim()) {
     throw new ContactInquiryValidationError("companyName is required when inquiryType is \"company\".");
+  }
+  for (const [field, max] of Object.entries(CONTACT_FIELD_LIMITS)) {
+    const value = input[field as keyof typeof CONTACT_FIELD_LIMITS];
+    if (typeof value === "string" && value.length > max) {
+      throw new ContactInquiryValidationError(`${field} must be at most ${max} characters.`);
+    }
   }
 }
 
@@ -107,13 +149,34 @@ export async function submitContactInquiry(input: ContactInquiryInput): Promise<
   form.set("page-title", AGENT_ORIGIN_PAGE_TITLE);
   form.set("page-url", AGENT_ORIGIN_PAGE_URL);
 
-  const response = await fetch(SUBMIT_URL, { method: "POST", body: form });
-
-  let raw: unknown = null;
+  let response: Response;
   try {
-    raw = await response.json();
+    response = await fetch(SUBMIT_URL, {
+      method: "POST",
+      body: form,
+      headers: BACKEND_KEY ? { [BACKEND_KEY_HEADER]: BACKEND_KEY } : undefined,
+      signal: AbortSignal.timeout(SUBMIT_TIMEOUT_MS),
+    });
+  } catch (err) {
+    const timedOut = err instanceof Error && err.name === "TimeoutError";
+    return {
+      submitted: false,
+      status: "unconfirmed",
+      message: timedOut
+        ? `The contact form backend did not answer within ${SUBMIT_TIMEOUT_MS / 1000} seconds. The inquiry may or may not have been delivered.`
+        : `Could not reach the contact form backend: ${err instanceof Error ? err.message : String(err)}`,
+      httpStatus: 0,
+      raw: null,
+    };
+  }
+
+  // Read the body once as text, then try JSON, so a non-JSON error page is kept intact.
+  const text = await response.text().catch(() => "");
+  let raw: unknown = text || null;
+  try {
+    raw = JSON.parse(text);
   } catch {
-    raw = await response.text().catch(() => null);
+    // Not JSON — keep the text body.
   }
 
   return interpretResponse(response.status, raw);
@@ -122,18 +185,28 @@ export async function submitContactInquiry(input: ContactInquiryInput): Promise<
 /**
  * Contact Form 7's standard submission contract reports outcome via a
  * `status` field ("mail_sent" | "validation_failed" | "spam" | "mail_failed"
- * | "aborted") and a human-readable `message`. The custom-cf7 wrapper this
- * site uses is unverified against a live call (see module doc note), so this
- * only claims a confident "sent"/"rejected" reading when that shape is
- * actually present, and otherwise reports "unknown" with the raw upstream
- * body attached so the caller can judge for themselves.
+ * | "aborted") and a human-readable `message`; wrappers commonly add a
+ * boolean `success`. The custom-cf7 wrapper this site uses is unverified
+ * against a live call (see module doc note), so only an explicit
+ * confirmation (`status: "mail_sent"` or `success: true` without a failure
+ * status) counts as sent. Everything else is "rejected" (explicit refusal) or
+ * "unconfirmed", and never reported as submitted.
  */
 function interpretResponse(httpStatus: number, raw: unknown): ContactInquiryResult {
   const body = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : null;
   const cf7Status = typeof body?.status === "string" ? body.status : null;
   const cf7Message = typeof body?.message === "string" ? body.message : null;
+  const ok = httpStatus >= 200 && httpStatus < 300;
+  const success = typeof body?.success === "boolean" ? body.success : null;
 
-  if (cf7Status === "mail_sent") {
+  // Every signal present must agree. "Sent" needs a 2xx plus an explicit
+  // confirmation (status "mail_sent" and/or success: true) and no signal
+  // saying otherwise; mixed signals (e.g. "mail_sent" with success: false, or
+  // "mail_sent" on a 5xx) fall through to "unconfirmed".
+  const confirms = cf7Status === "mail_sent" || success === true;
+  const contradicts = (cf7Status !== null && cf7Status !== "mail_sent") || success === false;
+
+  if (ok && confirms && !contradicts) {
     return {
       submitted: true,
       status: "sent",
@@ -143,22 +216,12 @@ function interpretResponse(httpStatus: number, raw: unknown): ContactInquiryResu
     };
   }
 
-  if (cf7Status) {
+  // Only failure signals, none confirming: an explicit refusal.
+  if (contradicts && !confirms) {
     return {
       submitted: false,
       status: "rejected",
-      message: cf7Message || `Submission rejected (status: ${cf7Status}).`,
-      httpStatus,
-      raw,
-    };
-  }
-
-  if (httpStatus >= 200 && httpStatus < 300) {
-    return {
-      submitted: true,
-      status: "unknown",
-      message:
-        "The backend accepted the request (HTTP 2xx) but returned a response shape this integration doesn't recognize, so success could not be confirmed with certainty. Raw response is attached.",
+      message: cf7Message || `Submission rejected (status: ${cf7Status ?? "success: false"}).`,
       httpStatus,
       raw,
     };
@@ -166,8 +229,10 @@ function interpretResponse(httpStatus: number, raw: unknown): ContactInquiryResu
 
   return {
     submitted: false,
-    status: "unknown",
-    message: `The backend returned HTTP ${httpStatus}. Raw response is attached.`,
+    status: "unconfirmed",
+    message: ok
+      ? "The backend answered HTTP 2xx without an explicit confirmation, so delivery could not be confirmed. Raw response is attached."
+      : `The backend returned HTTP ${httpStatus} without an explicit confirmation. Raw response is attached.`,
     httpStatus,
     raw,
   };

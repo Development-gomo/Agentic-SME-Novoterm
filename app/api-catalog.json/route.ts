@@ -1,6 +1,7 @@
 import { contact, LAST_MODIFIED } from "@/app/agent/content";
 import { SITE_ORIGIN } from "@/config/site-origin";
 import { AGENT_API_BASE_URL, AGENT_API_ENDPOINTS, corsPreflight, jsonResponse } from "@/lib/agent/api";
+import { CONTACT_TOOL_ENABLED, CONTACT_TOOL_NAME } from "@/config/features";
 import { SITE_CONFIG } from "@/lib/json-ld/config";
 
 export const dynamic = "force-static";
@@ -103,7 +104,9 @@ export function GET() {
       {
         name: "Novoterm MCP Server — Callable Tools for AI Agents",
         description:
-          "Live Model Context Protocol (MCP) server over Streamable HTTP. Agents invoke named tools with parameters to query filtered data (services, industries, case studies, team, FAQ search) and, via submit_contact_inquiry, to submit Novoterm's real contact form on a user's explicit behalf.",
+          `Live Model Context Protocol (MCP) server over Streamable HTTP. Agents invoke named tools with parameters to query filtered data (services, industries, landing pages, case studies, videos, team, FAQ and article search)${
+            CONTACT_TOOL_ENABLED ? ` and, via ${CONTACT_TOOL_NAME}, to submit Novoterm's real contact form on a user's explicit behalf` : ""
+          }.`,
         method: "POST",
         baseURL: abs("/mcp"),
         humanURL: abs("/mcp/tools"),
@@ -115,9 +118,11 @@ export function GET() {
           { type: "X-tool-discovery", description: "GET endpoint listing every tool with its name, description, and JSON Schema.", url: abs("/mcp/tools") },
           { type: "X-health", description: "Health/uptime probe.", url: abs("/mcp/health") },
           { type: "X-standard", description: "Model Context Protocol specification.", url: "https://modelcontextprotocol.io" },
-          { type: "X-action-tool", description: "submit_contact_inquiry sends a real inquiry through Novoterm's contact form — not read-only.", url: abs("/mcp/tools") },
+          ...(CONTACT_TOOL_ENABLED
+            ? [{ type: "X-action-tool", description: `${CONTACT_TOOL_NAME} sends a real inquiry through Novoterm's contact form — not read-only.`, url: abs("/mcp/tools") }]
+            : []),
         ],
-        tags: ["mcp", "agent", "tools", "streamable-http", "interactive", "llm", "action"],
+        tags: ["mcp", "agent", "tools", "streamable-http", "interactive", "llm", ...(CONTACT_TOOL_ENABLED ? ["action"] : ["read-only"])],
       },
       {
         name: "Robots.txt — Crawler Permissions",
@@ -132,7 +137,7 @@ export function GET() {
       },
       {
         name: "Contact",
-        description: "Human-facing contact pathway. No general company inbox is published — the contact form is the confirmed general contact channel.",
+        description: `Human-facing contact pathway: the contact form, plus the general inbox ${contact.email.address} and phone ${contact.phone.label} published in the site-wide footer.`,
         method: "GET",
         baseURL: contact.form.url,
         humanURL: contact.form.url,
@@ -143,13 +148,17 @@ export function GET() {
       },
     ],
 
-    maintainers: [{ FN: `${SITE_CONFIG.name} — contact form`, url: contact.form.url }],
+    maintainers: [{ FN: SITE_CONFIG.legalName, email: contact.email.address, tel: contact.phone.number, url: contact.form.url }],
 
     "X-organization": {
       name: SITE_CONFIG.name,
       legalName: SITE_CONFIG.legalName,
       url: SITE_CONFIG.url,
       founded: SITE_CONFIG.foundingDate,
+      address: contact.postalAddress,
+      email: contact.email.address,
+      telephone: contact.phone.number,
+      sameAs: SITE_CONFIG.sameAs,
     },
 
     "X-discovery": {

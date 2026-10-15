@@ -4,6 +4,7 @@ import {
   contact,
   generalFaqs,
   industries,
+  languageList,
   organization,
   services,
 } from "@/app/agent/content";
@@ -43,11 +44,13 @@ Novoterm Translation was founded in ${organization.founded} and is based in ${or
 
 - Founded: ${organization.founded}
 - Headquarters: ${organization.headquarters}
-- Languages: ${organization.languages}
+- Languages: ${organization.languages} — ${languageList.join(", ")} ([full list](${abs("/sprak")}))
 - In-house team: ${organization.inHouseTeamSize}, backed by ${organization.freelanceNetworkSize} freelance translators/reviewers
 - CEO: ${organization.ceo}
 - Pricing model: ${organization.pricingModel}
 - Philosophy: ${organization.philosophy}
+- Address: ${organization.address}
+- Contact: ${contact.email.address} | ${contact.phone.label} | [contact form](${contact.form.url})
 
 ## Services
 
@@ -69,7 +72,7 @@ ${keyPagesGroups}
 
 ${selectedFaqLines}
 
-Full FAQ: ${abs("/fragor-svar")} (and see [llms-full.txt](${abs("/llms-full.txt")}) for every question, including per-service FAQs)
+Full FAQ: [Frågor och svar](${abs("/fragor-svar")}) (and see [llms-full.txt](${abs("/llms-full.txt")}) for every question, including per-service FAQs)
 
 ## Machine-Readable Version
 
@@ -82,16 +85,16 @@ Full FAQ: ${abs("/fragor-svar")} (and see [llms-full.txt](${abs("/llms-full.txt"
 
 ## Article Library (${articleGroup?.entries.length ?? 0} articles)
 
-Full index: ${abs("/artiklar")}
+Full index: [Artiklar](${abs("/artiklar")})
 
 ## Video Highlights (${videoGroup?.entries.length ?? 0} videos)
 
-Full index: ${abs("/videos")}
+Full index: [Videor](${abs("/videor")})
 
 ## Notes for AI Agents
 
 - Bilingual site: Swedish (primary) and English (under /en/, partially mirrored — not every article has an English translation).
-- No general company inbox (info@/kontakt@) was found — use the [contact form](${contact.form.url}).
+- General inquiries: ${contact.email.address}, ${contact.phone.label}, or the [contact form](${contact.form.url}). Named staff emails in the team data are personal channels, not the company contact.
 - Last verified: ${LAST_MODIFIED}.
 `;
 }
