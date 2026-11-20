@@ -81,7 +81,10 @@ Full FAQ: [Frågor och svar](${abs("/fragor-svar")}) (and see [llms-full.txt](${
 - [Agent JSON API](${abs("/agent/v1/index.json")})
 - [OpenAPI spec](${abs("/openapi.json")})
 - [API catalog](${abs("/api-catalog.json")})
-- [MCP server](${abs("/mcp")}) ([tool discovery](${abs("/mcp/tools")}))
+- [MCP server](${abs("/mcp")}) ([tool discovery](${abs("/mcp/tools")}), [server card](${abs("/.well-known/mcp/server-card.json")}))
+- [Markdown version of every page](${abs("/agent/md/pages.md")}) (e.g. [Översättning](${abs("/agent/md/tjanster/oversattning.md")}))
+- [ARD manifest (Agentic Resource Discovery)](${abs("/.well-known/ard.json")})
+- [API catalog (RFC 9727)](${abs("/.well-known/api-catalog")})
 
 ## Article Library (${articleGroup?.entries.length ?? 0} articles)
 

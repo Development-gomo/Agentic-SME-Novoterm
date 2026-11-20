@@ -7,13 +7,15 @@
  * 3. publishSnapshot: both data files are replaced together or not at all.
  * 4. Contact response handling (lib/agent/contact.ts, transpiled on the fly
  *    with a stubbed fetch): only explicit, consistent confirmation is "sent".
+ * 5. resolveRedirectedLinks (stubbed fetch): redirects resolved, dead links
+ *    (404/410) removed with their text kept, other failures left in place.
  */
 import { readFile, mkdtemp, mkdir, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import ts from "typescript";
-import { htmlToText, publishSnapshot, validateContent } from "./refresh-content.mjs";
+import { htmlToText, publishSnapshot, resolveRedirectedLinks, validateContent } from "./refresh-content.mjs";
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 let failures = 0;
@@ -72,6 +74,8 @@ rejects("all industry FAQs removed", (c) => c.industries.forEach((i) => (i.faqs 
 rejects("CEO message emptied", (c) => (c.about.ceo.message = ""));
 rejects("history text emptied", (c) => (c.about.history.text = ""));
 rejects("a video loses its description", (c) => (c.videos[0].description = ""));
+rejects("a video loses its duration", (c) => (c.videos[3].duration = ""));
+rejects("a video loses its upload date", (c) => (c.videos[5].uploadDate = ""));
 rejects("articles cut by half", (c) => (c.articles = c.articles.slice(0, 30)));
 rejects("client testimonials gone", (c) => (c.testimonials.clients = []));
 rejects("footer email missing", (c) => (c.contact.email = ""));
@@ -209,6 +213,33 @@ for (const [field, value] of [["fullName", "x".repeat(201)], ["message", "x".rep
 }
 globalThis.fetch = realFetch;
 await rm(dir, { recursive: true, force: true });
+
+// 5. resolveRedirectedLinks ----------------------------------------------------
+console.log("\n# resolveRedirectedLinks (stubbed fetch)");
+{
+  const S = "https://www.novoterm.se";
+  const routes = {
+    [`${S}/old-page/`]: { status: 200, url: `${S}/tjanster/oversattning` },
+    [`${S}/en/sprakoversattning/`]: { status: 404 },
+    [`${S}/flaky`]: { status: 503 },
+  };
+  globalThis.fetch = async (u) => {
+    const r = routes[u] || { status: 200, url: u };
+    const res = new Response("", { status: r.status });
+    Object.defineProperty(res, "url", { value: r.url || u });
+    return res;
+  };
+  const empty = { services: [], industries: [], caseStudies: [], articles: [], pages: [], videos: [] };
+  const out = await resolveRedirectedLinks({
+    ...empty,
+    industries: [{ url: `${S}/branscher/x`, text: `Se (${S}/old-page/) och en översättning (${S}/en/sprakoversattning/) av dessa. Läs (${S}/flaky).` }],
+  });
+  const text = out.industries[0].text;
+  check("redirecting link replaced by its final URL", text.includes(`Se (${S}/tjanster/oversattning)`), text);
+  check("404 link removed, link text kept", text.includes("en översättning av dessa") && !text.includes("sprakoversattning"), text);
+  check("non-404 failure (503) left in place", text.includes(`(${S}/flaky)`), text);
+  globalThis.fetch = realFetch;
+}
 
 console.log(failures ? `\n${failures} test(s) FAILED` : "\nAll tests passed.");
 process.exit(failures ? 1 : 0);

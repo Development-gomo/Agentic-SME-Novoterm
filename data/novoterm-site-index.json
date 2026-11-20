@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-10-14T18:00:59.919Z"
+    "generatedAt": "2026-11-20T07:50:24.407Z"
   },
   "siteIndex": [
     {
@@ -52,16 +52,20 @@
       "title": "Services",
       "entries": [
         {
-          "name": "Andra texttyper",
-          "url": "https://www.novoterm.se/tjanster/texttyper"
+          "name": "AI-översättning",
+          "url": "https://www.novoterm.se/tjanster/ai-oversattning"
         },
         {
-          "name": "Pressmeddelanden",
-          "url": "https://www.novoterm.se/tjanster/oversattning-pressmeddelanden"
+          "name": "Korrekturläsning",
+          "url": "https://www.novoterm.se/tjanster/korrekturlasning"
         },
         {
-          "name": "Policyer & Uppförandekoder",
-          "url": "https://www.novoterm.se/tjanster/oversattning-policyer-uppforandekoder"
+          "name": "Översättning",
+          "url": "https://www.novoterm.se/tjanster/oversattning"
+        },
+        {
+          "name": "Årsredovisning",
+          "url": "https://www.novoterm.se/tjanster/oversattning-arsredovisning"
         },
         {
           "name": "Hållbarhetsrapporter",
@@ -76,8 +80,24 @@
           "url": "https://www.novoterm.se/tjanster/oversattning-kvartalsrapporter"
         },
         {
-          "name": "Årsredovisning",
-          "url": "https://www.novoterm.se/tjanster/oversattning-arsredovisning"
+          "name": "Policyer & Uppförandekoder",
+          "url": "https://www.novoterm.se/tjanster/oversattning-policyer-uppforandekoder"
+        },
+        {
+          "name": "Pressmeddelanden",
+          "url": "https://www.novoterm.se/tjanster/oversattning-pressmeddelanden"
+        },
+        {
+          "name": "Premiumöversättning",
+          "url": "https://www.novoterm.se/tjanster/premiumoversattning"
+        },
+        {
+          "name": "Språkgranskning",
+          "url": "https://www.novoterm.se/tjanster/sprakgranskning"
+        },
+        {
+          "name": "Språktjänster",
+          "url": "https://www.novoterm.se/tjanster/spraktjanster"
         },
         {
           "name": "Textbearbetning",
@@ -88,28 +108,8 @@
           "url": "https://www.novoterm.se/tjanster/textgranskning"
         },
         {
-          "name": "Korrekturläsning",
-          "url": "https://www.novoterm.se/tjanster/korrekturlasning"
-        },
-        {
-          "name": "Språkgranskning",
-          "url": "https://www.novoterm.se/tjanster/sprakgranskning"
-        },
-        {
-          "name": "AI-översättning",
-          "url": "https://www.novoterm.se/tjanster/ai-oversattning"
-        },
-        {
-          "name": "Premiumöversättning",
-          "url": "https://www.novoterm.se/tjanster/premiumoversattning"
-        },
-        {
-          "name": "Språktjänster",
-          "url": "https://www.novoterm.se/tjanster/spraktjanster"
-        },
-        {
-          "name": "Översättning",
-          "url": "https://www.novoterm.se/tjanster/oversattning"
+          "name": "Andra texttyper",
+          "url": "https://www.novoterm.se/tjanster/texttyper"
         }
       ]
     },
@@ -117,52 +117,36 @@
       "title": "Industries",
       "entries": [
         {
-          "name": "Våra huvudområden",
-          "url": "https://www.novoterm.se/branscher/vara-huvudomraden"
+          "name": "Bygg och konstruktion",
+          "url": "https://www.novoterm.se/branscher/bygg-och-konstruktion"
         },
         {
           "name": "Energisektorn",
           "url": "https://www.novoterm.se/branscher/energisektorn"
         },
         {
-          "name": "Bygg och konstruktion",
-          "url": "https://www.novoterm.se/branscher/bygg-och-konstruktion"
-        },
-        {
-          "name": "Utbildning och ledarskap",
-          "url": "https://www.novoterm.se/branscher/utbildning-och-ledarskap"
-        },
-        {
-          "name": "Mode, design och konst",
-          "url": "https://www.novoterm.se/branscher/mode-design-och-konst"
-        },
-        {
-          "name": "Marknadsföring och PR",
-          "url": "https://www.novoterm.se/branscher/marknadsforings-och-pr"
-        },
-        {
-          "name": "Personalutveckling och HR",
-          "url": "https://www.novoterm.se/branscher/personalutveckling-och-hr"
-        },
-        {
-          "name": "Hållbarhet",
-          "url": "https://www.novoterm.se/branscher/hallbarhet"
-        },
-        {
-          "name": "Fysisk och digital säkerhet",
-          "url": "https://www.novoterm.se/branscher/fysisk-och-digital-sakerhet"
+          "name": "Finansiell översättning",
+          "url": "https://www.novoterm.se/branscher/finansiell-oversattning"
         },
         {
           "name": "Försvarsbranschen",
           "url": "https://www.novoterm.se/branscher/forsvarsbranschen"
         },
         {
+          "name": "Fysisk och digital säkerhet",
+          "url": "https://www.novoterm.se/branscher/fysisk-och-digital-sakerhet"
+        },
+        {
+          "name": "Hållbarhet",
+          "url": "https://www.novoterm.se/branscher/hallbarhet"
+        },
+        {
           "name": "IT-översättning",
           "url": "https://www.novoterm.se/branscher/it-oversattning"
         },
         {
-          "name": "Teknisk översättning",
-          "url": "https://www.novoterm.se/branscher/teknisk-oversattning"
+          "name": "Marknadsföring och PR",
+          "url": "https://www.novoterm.se/branscher/marknadsforings-och-pr"
         },
         {
           "name": "Juridisk översättning",
@@ -173,8 +157,24 @@
           "url": "https://www.novoterm.se/branscher/medicinsk-oversattning"
         },
         {
-          "name": "Finansiell översättning",
-          "url": "https://www.novoterm.se/branscher/finansiell-oversattning"
+          "name": "Mode, design och konst",
+          "url": "https://www.novoterm.se/branscher/mode-design-och-konst"
+        },
+        {
+          "name": "Teknisk översättning",
+          "url": "https://www.novoterm.se/branscher/teknisk-oversattning"
+        },
+        {
+          "name": "Personalutveckling och HR",
+          "url": "https://www.novoterm.se/branscher/personalutveckling-och-hr"
+        },
+        {
+          "name": "Utbildning och ledarskap",
+          "url": "https://www.novoterm.se/branscher/utbildning-och-ledarskap"
+        },
+        {
+          "name": "Våra huvudområden",
+          "url": "https://www.novoterm.se/branscher/vara-huvudomraden"
         }
       ]
     },
@@ -182,20 +182,28 @@
       "title": "Client Cases",
       "entries": [
         {
-          "name": "Naturvårdsverket",
-          "url": "https://www.novoterm.se/kundcase/naturvardsverket"
+          "name": "E-handel – mode och design",
+          "url": "https://www.novoterm.se/kundcase/e-handel-mode-design"
         },
         {
           "name": "Julius Production",
           "url": "https://www.novoterm.se/kundcase/julius-production"
         },
         {
+          "name": "Moderna Museet",
+          "url": "https://www.novoterm.se/kundcase/moderna-museet"
+        },
+        {
+          "name": "Naturvårdsverket",
+          "url": "https://www.novoterm.se/kundcase/naturvardsverket"
+        },
+        {
           "name": "True Stories",
           "url": "https://www.novoterm.se/kundcase/true-stories"
         },
         {
-          "name": "Moderna Museet",
-          "url": "https://www.novoterm.se/kundcase/moderna-museet"
+          "name": "True Stories – Valles värld",
+          "url": "https://www.novoterm.se/kundcase/true-stories-valles-varld"
         }
       ]
     },
@@ -247,6 +255,18 @@
           "url": "https://www.novoterm.se/artiklar/din-%c3%b6vers%c3%a4ttningsbyr%c3%a5-i-stockholm-novoterm-translation"
         },
         {
+          "name": "Därför är översättning en strategisk fråga för försvarsbranschen",
+          "url": "https://www.novoterm.se/artiklar/oversattning-strategisk-fraga-forsvarsbranschen"
+        },
+        {
+          "name": "En bra översättning börjar med en bra originaltext",
+          "url": "https://www.novoterm.se/artiklar/en-bra-oversattning-borjar-med-en-bra-originaltext"
+        },
+        {
+          "name": "En enda årsredovisning – olika typer av text",
+          "url": "https://www.novoterm.se/artiklar/arsredovisning-olika-typer-av-text"
+        },
+        {
           "name": "En guide till språkgranskning: Vad är skillnaden mellan korrekturläsning och textbearbetning?",
           "url": "https://www.novoterm.se/artiklar/en-guide-till-sprakgranskning"
         },
@@ -295,6 +315,10 @@
           "url": "https://www.novoterm.se/artiklar/hur-ser-arbetsprocessen-ut-f%c3%b6r-en-%c3%b6vers%c3%a4ttningsbyr%c3%a5-novoterms-processguide-f%c3%b6r-%c3%b6vers%c3%a4ttning-och-spr%c3%a5kgranskning"
         },
         {
+          "name": "Hur ser ni till att ert hållbarhetsbudskap håller på alla språk?",
+          "url": "https://www.novoterm.se/artiklar/hallbarhetsbudskap-pa-alla-sprak"
+        },
+        {
           "name": "Juridisk översättning – varför det är värt att anlita en professionell översättare",
           "url": "https://www.novoterm.se/artiklar/juridisk-oversattning-varfor-det-ar-vart-att-anlita-en-professionell-oversattare"
         },
@@ -313,6 +337,10 @@
         {
           "name": "Människa eller maskin: hur använder översättare AI i dag?",
           "url": "https://www.novoterm.se/artiklar/hur-oversattare-anvander-ai"
+        },
+        {
+          "name": "Novoterm 30 år – Björn om duvor, gruvor och översättningsteknik",
+          "url": "https://www.novoterm.se/artiklar/novoterm-30-ar-bjorn-om-duvor-gruvor-och-oversattningsteknik"
         },
         {
           "name": "Novoterm fyller jämnt – 30 år av språkglädje och utveckling",
@@ -363,6 +391,10 @@
           "url": "https://www.novoterm.se/artiklar/vad-g%c3%b6r-en-spr%c3%a5kgranskare"
         },
         {
+          "name": "Vad händer när fem AI-verktyg får samma översättningsuppdrag?",
+          "url": "https://www.novoterm.se/artiklar/test-fem-ai-verktyg-oversattning"
+        },
+        {
           "name": "Vad innebär en kvalitetsöversättning?",
           "url": "https://www.novoterm.se/artiklar/vad-innebar-en-kvalitetsoversattning"
         },
@@ -389,6 +421,10 @@
         {
           "name": "Vad är medicinska översättningar?",
           "url": "https://www.novoterm.se/artiklar/vad-%c3%a4r-medicinska-%c3%b6vers%c3%a4ttningar"
+        },
+        {
+          "name": "Vad är shadow translation och hur kan det påverka er?",
+          "url": "https://www.novoterm.se/artiklar/vad-ar-shadow-translation"
         },
         {
           "name": "Vad är skillnaden mellan textredigering, textbearbetning, korrekturläsning, textgranskning och språkgranskning?",
@@ -464,6 +500,10 @@
       "title": "Video Highlights",
       "entries": [
         {
+          "name": "AI-översättning – fördelar, begränsningar och mänsklig expertis",
+          "url": "https://www.novoterm.se/videor/ai-oversattning-fordelar-begransningar-och-mansklig-expertis"
+        },
+        {
           "name": "Finansiell översättning för årsredovisningar, rapporter och prospekt",
           "url": "https://www.novoterm.se/videor/finansiell-oversattning-arsredovisningar-rapporter-prospekt"
         },
@@ -480,8 +520,16 @@
           "url": "https://www.novoterm.se/videor/oversattning-spraktjanster"
         },
         {
+          "name": "Specialiserad översättning av hållbarhetsdokument",
+          "url": "https://www.novoterm.se/videor/specialiserad-oversattning-av-hallbarhetsdokument"
+        },
+        {
           "name": "Teknisk översättning för manualer, specifikationer och tekniska dokument",
           "url": "https://www.novoterm.se/videor/teknisk-oversattning-manualer-specifikationer-tekniska-dokument"
+        },
+        {
+          "name": "Varför finansöversättningar behöver en specialiserad översättare",
+          "url": "https://www.novoterm.se/videor/varfor-finansoversattningar-behover-en-specialiserad-oversattare"
         },
         {
           "name": "Webb- och IT-översättning av professionella översättare",

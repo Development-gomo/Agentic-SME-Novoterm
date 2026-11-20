@@ -289,4 +289,8 @@ export const machineReadableSources: AgentLink[] = [
   { label: "API catalog", url: abs("/api-catalog.json"), description: "APIs.json 0.16 directory of every machine-readable endpoint." },
   { label: "MCP server", url: abs("/mcp"), description: "Live Model Context Protocol server exposing callable tools." },
   { label: "MCP tool discovery", url: abs("/mcp/tools"), description: "Plain HTTP listing of every MCP tool and its JSON Schema." },
+  { label: "MCP server card", url: abs("/.well-known/mcp/server-card.json"), description: "MCP server card: name, version, transport and endpoint of the MCP server." },
+  { label: "ARD manifest", url: abs("/.well-known/ard.json"), description: "Agentic Resource Discovery (ARD v0.91) manifest listing the MCP server, REST API, API catalog, llms.txt and this page." },
+  { label: "API catalog (RFC 9727)", url: abs("/.well-known/api-catalog"), description: "Standard RFC 9727 linkset pointing to the API descriptions, documentation and status endpoints." },
+  { label: "Markdown pages", url: abs("/agent/md/pages.md"), description: "Clean markdown version of every page on novoterm.se, one file per page." },
 ];

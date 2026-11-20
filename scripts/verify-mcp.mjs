@@ -1,8 +1,8 @@
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 
 /**
  * End-to-end check of a running deployment: MCP handshake, tool discovery,
+ * the well-known discovery files and per-page markdown,
  * real read-only tool calls, the origin policy, and the self-contained
  * /agent/v1/schema.json. Every check is an assertion; the script exits 1 on
  * the first failure.
@@ -104,6 +104,46 @@ async function checkSchemaDocument() {
   assert(doc.data.endpoints.every((e) => e.schema), "every endpoint has an inline schema");
 }
 
+/** Discovery files added Nov 2026: ARD manifest, RFC 9727 API catalog, MCP server card, per-page markdown. */
+async function checkDiscoveryFiles(contactEnabled) {
+  console.log("\n--- discovery files ---");
+  const local = (u) => u.replace("https://www.novoterm.se", BASE_URL);
+
+  const ardRes = await fetch(`${BASE_URL}/.well-known/ard.json`);
+  assert(ardRes.status === 200, `/.well-known/ard.json responds (HTTP ${ardRes.status})`);
+  const ard = await ardRes.json();
+  assert(Array.isArray(ard.entries) && ard.entries.length > 0, `ard.json has entries (${ard.entries?.length})`);
+  for (const e of ard.entries) {
+    assert(/^urn:air:novoterm\.se:/.test(e.identifier) && e.displayName && e.type && !!e.url !== !!e.data, `ARD entry ${e.identifier} has identifier, displayName, type and exactly one of url/data`);
+    if (e.url) {
+      const r = await fetch(local(e.url));
+      assert(r.status === 200, `ARD entry ${e.identifier} url resolves (HTTP ${r.status})`);
+    }
+  }
+  const mcpEntry = ard.entries.find((e) => e.type === "application/mcp-server-card+json");
+  assert(mcpEntry?.capabilities?.includes(CONTACT_TOOL) === contactEnabled, `ARD MCP entry lists ${CONTACT_TOOL} only when it is enabled`);
+
+  const ac = await fetch(`${BASE_URL}/.well-known/api-catalog`);
+  assert(ac.status === 200 && /application\/linkset\+json/.test(ac.headers.get("content-type") ?? ""), "/.well-known/api-catalog is an application/linkset+json document");
+  const head = await fetch(`${BASE_URL}/.well-known/api-catalog`, { method: "HEAD" });
+  assert(head.status === 200 && /rel="api-catalog"/.test(head.headers.get("link") ?? ""), "HEAD /.well-known/api-catalog returns an api-catalog Link header (RFC 9727)");
+
+  const card = await (await fetch(`${BASE_URL}/.well-known/mcp/server-card.json`)).json();
+  const health = await (await fetch(`${BASE_URL}/mcp/health`)).json();
+  assert(card.version === health.version && card.remotes?.[0]?.url?.endsWith("/mcp"), `MCP server card version (${card.version}) matches /mcp/health and points to /mcp`);
+
+  const index = await fetch(`${BASE_URL}/agent/md/pages.md`);
+  const indexText = await index.text();
+  assert(index.status === 200 && /text\/markdown/.test(index.headers.get("content-type") ?? ""), "/agent/md/pages.md is served as text/markdown");
+  const links = [...indexText.matchAll(/\]\((https:\/\/www\.novoterm\.se\/agent\/md\/[^)]+)\)/g)].map((m) => m[1]);
+  let okCount = 0;
+  for (const u of links) {
+    const r = await fetch(local(u));
+    if (r.status === 200 && /rel="canonical"/.test(r.headers.get("link") ?? "")) okCount++;
+  }
+  assert(links.length > 100 && okCount === links.length, `every markdown page listed in pages.md responds with a canonical link (${okCount}/${links.length})`);
+}
+
 async function main() {
   console.log(`Target: ${BASE_URL}`);
   const health = await (await fetch(`${BASE_URL}/mcp/health`)).json();
@@ -158,12 +198,21 @@ async function main() {
   assert(missing.isError === true, "missing required argument is rejected");
   // The email is invalid too, so even a server without length limits rejects
   // this call before it can reach the real contact form.
-  const invalid = await client.callTool({
-    name: "submit_contact_inquiry",
-    arguments: { fullName: "x".repeat(500), email: "not-an-email", phone: "1", serviceArea: "other", inquiryType: "private" },
-  });
+  // With the tool switched off, MCP SDK v2 answers a call to an unregistered
+  // tool with a JSON-RPC error (thrown by the client) rather than an isError
+  // result; either way the call must not succeed.
+  let rejected;
+  try {
+    const invalid = await client.callTool({
+      name: "submit_contact_inquiry",
+      arguments: { fullName: "x".repeat(500), email: "not-an-email", phone: "1", serviceArea: "other", inquiryType: "private" },
+    });
+    rejected = invalid.isError === true;
+  } catch (err) {
+    rejected = !contactEnabled && /not found|unknown tool/i.test(String(err?.message ?? err));
+  }
   assert(
-    invalid.isError === true,
+    rejected,
     contactEnabled ? "invalid / over-long contact input is rejected before any submission" : `${CONTACT_TOOL} cannot be called while switched off`,
   );
 
@@ -172,6 +221,7 @@ async function main() {
   await checkOriginPolicy();
   await checkBodyLimit();
   await checkSchemaDocument();
+  await checkDiscoveryFiles(contactEnabled);
 
   console.log("\nAll checks passed.");
 }

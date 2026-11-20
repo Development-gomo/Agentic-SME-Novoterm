@@ -16,6 +16,12 @@
  * 2026-10-14 for the October rebuild's live-site comparison — but nothing in
  * this ongoing content refresh depends on it.
  *
+ * November 2026: backend.novoterm.se answered every request with a
+ * SiteGround bot challenge, so that refresh ran this same script against
+ * the WordPress objects embedded in the public pages instead (see
+ * scripts/build-public-snapshot.mjs and scripts/public-pages-source.mjs).
+ * Once the backend is reachable again, the normal command below applies.
+ *
  * Run: node scripts/refresh-content.mjs
  * Bumps `meta.crawledAt` to today, which becomes LAST_MODIFIED throughout the
  * app (the HTML page, JSON API, llms.txt/llms-full.txt/ai.txt) — so freshness
@@ -60,18 +66,27 @@ async function fetchVideos() {
   for (const v of raw) {
     const url = `${BASE}/videor/${v.slug}`;
     let ld = null;
-    const res = await fetch(url);
-    if (res.ok) {
-      const html = await res.text();
-      for (const m of html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
-        try {
-          const data = JSON.parse(m[1]);
-          const nodes = [data, ...(Array.isArray(data) ? data : []), ...(data["@graph"] || [])];
-          ld = nodes.find((n) => n?.["@type"] === "VideoObject") || ld;
-        } catch {
-          // Not valid JSON-LD — ignore this block.
+    let res;
+    // The site occasionally regenerates a video page without the YouTube
+    // duration (seen Nov 2026: 7 of 18 pages for a while), so a page whose
+    // VideoObject is incomplete is fetched again before giving up.
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      ld = null;
+      res = await fetch(url);
+      if (res.ok) {
+        const html = await res.text();
+        for (const m of html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
+          try {
+            const data = JSON.parse(m[1]);
+            const nodes = [data, ...(Array.isArray(data) ? data : []), ...(data["@graph"] || [])];
+            ld = nodes.find((n) => n?.["@type"] === "VideoObject") || ld;
+          } catch {
+            // Not valid JSON-LD — ignore this block.
+          }
         }
       }
+      if (ld?.duration && ld?.uploadDate) break;
+      if (attempt < 3) await new Promise((r) => setTimeout(r, 2000 * attempt));
     }
     if (!ld) console.warn(`warning: no VideoObject JSON-LD on ${url} (HTTP ${res.status})`);
     const first = (x) => (Array.isArray(x) ? x[0] : x);
@@ -398,8 +413,15 @@ async function buildContent() {
         heroDescription = htmlToText(sec.sub_heading);
       } else if (sec.acf_fc_layout === "industry_intro") {
         const h = htmlToLine(sec.heading);
-        // Some intros split their prose over main_content and content.
-        const t = [htmlToText(sec.main_content), htmlToText(sec.content)].filter(Boolean).join("\n\n");
+        // Some intros split their prose over main_content and content. The
+        // site renders `content` only in the two-column "text" layout; the
+        // "image" layout shows main_content beside the image and ignores
+        // `content`. On it-oversattning, medicinsk-oversattning and
+        // teknisk-oversattning that hidden field still holds leftover
+        // prospectus text from the finance page (found Nov 2026), so it must
+        // not be published.
+        const shownContent = sec.layout_type === "image" ? "" : htmlToText(sec.content);
+        const t = [htmlToText(sec.main_content), shownContent].filter(Boolean).join("\n\n");
         if (sec.section_theme === "light" && !description) {
           heading = h; description = t;
         } else if (sec.section_theme === "dark" && !whyNovoterm) {
@@ -654,7 +676,8 @@ async function buildContent() {
   }
 
   return {
-    meta: { source: "novoterm.se WordPress REST API", crawledAt: new Date().toISOString().slice(0, 10) },
+    // CONTENT_SOURCE is set by scripts/public-pages-source.mjs when the backend API is unreachable.
+    meta: { source: process.env.CONTENT_SOURCE || "novoterm.se WordPress REST API", crawledAt: new Date().toISOString().slice(0, 10) },
     services, industries, caseStudies, team, faq, articles, about, pages, languages, videos, testimonials, contact,
   };
 }
@@ -698,6 +721,11 @@ async function buildSiteIndex(content) {
  * Replaces site links inside CMS text that only reach a page through
  * redirects (e.g. legacy /sprakoversattning/ -> /tjanster/oversattning) with
  * their final URL, so the agent layer never hands out redirect chains.
+ * Links that are definitively gone (404/410) are removed — the link text
+ * stays, only the " (url)" after it is dropped — so the agent layer never
+ * hands out a dead link either (Nov 2026: /branscher/juridisk-oversattning
+ * links "översättning" to backend.novoterm.se/en/sprakoversattning/, which
+ * is /en/sprakoversattning/ on the public site: 404).
  */
 async function resolveRedirectedLinks(content) {
   const json = JSON.stringify(content);
@@ -706,20 +734,27 @@ async function resolveRedirectedLinks(content) {
     [...content.services, ...content.industries, ...content.caseStudies, ...content.articles, ...content.pages, ...content.videos].map((x) => x.url),
   );
   const replacements = new Map();
+  const broken = new Set();
   for (const url of urls) {
     const bare = url.replace(/[.,;:!?]+$/, "");
-    if (known.has(bare) || replacements.has(bare)) continue;
+    if (known.has(bare) || replacements.has(bare) || broken.has(bare)) continue;
     try {
       const res = await fetch(bare, { redirect: "follow" });
       const final = res.url.replace(/\/$/, "");
       if (res.ok && final !== bare.replace(/\/$/, "")) replacements.set(bare, final);
       if (!res.ok) console.warn(`warning: link in CMS text is broken (HTTP ${res.status}): ${bare}`);
+      if (res.status === 404 || res.status === 410) broken.add(bare);
     } catch (err) {
       console.warn(`warning: could not check ${bare}: ${err.message}`);
     }
   }
-  if (!replacements.size) return content;
+  if (!replacements.size && !broken.size) return content;
   let out = json;
+  for (const url of broken) {
+    out = out.split(` (${url})`).join("");
+    if (out.includes(url)) console.warn(`warning: broken link ${url} also appears outside a "text (url)" link and was left in place`);
+    else console.log(`removed broken link: ${url}`);
+  }
   // Longest first, so a URL that is a prefix of another is not replaced inside it.
   for (const [from, to] of [...replacements].sort((a, b) => b[0].length - a[0].length)) {
     out = out.split(`${from}"`).join(`${to}"`).split(`${from})`).join(`${to})`).split(`${from} `).join(`${to} `);
@@ -734,7 +769,8 @@ async function resolveRedirectedLinks(content) {
  * LANDING_PAGE_SLUGS) instead of being silently missed.
  */
 const KNOWN_PAGE_SLUGS = new Set([
-  "home", "om-oss", "fragor-svar", "kontakta-oss", "kundcase", "artiklar", "videos", "integritetspolicy",
+  // "videor": the video index page's WP slug (renamed from "videos" by Nov 2026).
+  "home", "om-oss", "fragor-svar", "kontakta-oss", "kundcase", "artiklar", "videos", "videor", "integritetspolicy",
   "event-registration", "newsletter-unsubscribe", ...LANDING_PAGE_SLUGS,
 ]);
 
@@ -795,7 +831,7 @@ function validateContent(content, previous, allowShrink) {
   missing(content.caseStudies, "case study", ["title", "client", "narrative"]);
   missing(content.articles, "article", ["title", "content"]);
   missing(content.pages, "landing page", ["title", "description"]);
-  missing(content.videos, "video", ["title", "description", "embedUrl", "thumbnailUrl"]);
+  missing(content.videos, "video", ["title", "description", "embedUrl", "thumbnailUrl", "duration", "uploadDate"]);
   missing(content.team, "team member", ["name", "position"]);
   const about = content.about || {};
   if (!about.heroTagline) problems.push("about: empty homepage tagline");
@@ -912,4 +948,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { htmlToText, decodeEntities, validateContent, publishSnapshot };
+export { htmlToText, decodeEntities, validateContent, publishSnapshot, resolveRedirectedLinks };

@@ -3,6 +3,7 @@ import { SITE_ORIGIN } from "@/config/site-origin";
 import { MCP_SERVER_NAME, MCP_SERVER_VERSION, mcpTools } from "@/lib/mcp/tools";
 import { createRateLimiter, type RateLimitResult } from "@/lib/rate-limit";
 import { createMcpHandler } from "mcp-handler";
+import { z } from "zod";
 
 /**
  * Live MCP server for Novoterm, exposing services, industries, case studies,
@@ -11,13 +12,16 @@ import { createMcpHandler } from "mcp-handler";
  * when CONTACT_TOOL_ENABLED is on — config/features.ts) that submits
  * Novoterm's real contact form on a user's explicit behalf.
  *
- * Transport: Streamable HTTP in stateless mode — a fresh server instance per
- * request (no session store), the recommended pattern for this mostly
- * read-heavy, idempotent tool set. The deprecated SSE transport is disabled.
+ * Transport: Streamable HTTP, stateless. mcp-handler 2.x (MCP SDK v2) serves
+ * the 2026-07-28 MCP specification natively and 2025-era Streamable HTTP
+ * clients through the SDK's stateless fallback, from the same handler. The
+ * old HTTP+SSE transport no longer exists in 2.x.
  *
- * Mounted at app/mcp/[transport]/route.ts with basePath "/mcp", so the
- * Streamable HTTP endpoint resolves to /mcp/mcp; next.config.mjs rewrites the
- * clean, advertised URL /mcp to /mcp/mcp.
+ * Mounted at app/mcp/[transport]/route.ts; next.config.mjs rewrites the
+ * clean, advertised URL /mcp to /mcp/mcp. mcp-handler 2.x answers every
+ * request it is given (routing is left to the framework), so only the
+ * "mcp" segment is served here — any other /mcp/<x> path is a 404, as it was
+ * with 1.x. /mcp/tools and /mcp/health are their own static routes.
  */
 
 export const maxDuration = 60;
@@ -144,23 +148,39 @@ const mcpHandler = createMcpHandler(
         {
           title: tool.title,
           description: tool.description,
-          inputSchema: tool.inputSchema,
+          // SDK v2 takes a full Standard Schema object, not a raw zod shape.
+          inputSchema: z.object(tool.inputSchema),
           annotations: tool.annotations,
         },
         async (args: Record<string, unknown>) => tool.handler(args ?? {}),
       );
     }
   },
-  { serverInfo: { name: MCP_SERVER_NAME, version: MCP_SERVER_VERSION } },
   {
-    streamableHttpEndpoint: "/mcp",
-    maxDuration: 60,
-    disableSse: true,
+    serverInfo: { name: MCP_SERVER_NAME, version: MCP_SERVER_VERSION },
     verboseLogs: process.env.NODE_ENV !== "production",
   },
 );
 
-async function handleRequest(incoming: Request): Promise<Response> {
+type RouteContext = { params: Promise<{ transport: string }> };
+
+/** Only /mcp/mcp (the target of the /mcp rewrite) is the MCP endpoint. */
+async function isMcpEndpoint(context: RouteContext): Promise<boolean> {
+  const { transport } = await context.params;
+  return transport === "mcp";
+}
+
+function notFound(): Response {
+  return new Response("Not Found", { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8" } });
+}
+
+async function handleOptions(request: Request, context: RouteContext): Promise<Response> {
+  if (!(await isMcpEndpoint(context))) return notFound();
+  return handlePreflight(request);
+}
+
+async function handleRequest(incoming: Request, context: RouteContext): Promise<Response> {
+  if (!(await isMcpEndpoint(context))) return notFound();
   const origin = incoming.headers.get("origin");
   if (origin && !ALLOWED_ORIGINS.has(origin)) {
     return jsonRpcError(403, -32000, `Origin ${origin} is not allowed.`);
@@ -217,4 +237,4 @@ async function handleRequest(incoming: Request): Promise<Response> {
   return response;
 }
 
-export { handleRequest as DELETE, handleRequest as GET, handleRequest as POST, handlePreflight as OPTIONS };
+export { handleRequest as DELETE, handleRequest as GET, handleRequest as POST, handleOptions as OPTIONS };

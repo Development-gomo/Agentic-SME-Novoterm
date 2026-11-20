@@ -23,7 +23,7 @@ import { errorContent, jsonContent, type McpTool } from "./types";
 
 /** Identity advertised over the MCP protocol and on /mcp/health. */
 export const MCP_SERVER_NAME = "novoterm";
-export const MCP_SERVER_VERSION = "1.2.0";
+export const MCP_SERVER_VERSION = "1.3.0";
 
 /** Base URL of the REST API the MCP tools mirror. */
 export const MCP_API_BASE = `${SITE_ORIGIN}/agent/v1`;

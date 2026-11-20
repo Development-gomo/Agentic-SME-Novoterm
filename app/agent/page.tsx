@@ -185,6 +185,11 @@ const STYLE = `
 export default function AgentPage() {
   return (
     <>
+      {/* Discovery links (React hoists <link> into <head>): ARD manifest, RFC 9727 API catalog, OpenAPI, llms.txt. */}
+      <link rel="ard" type="application/ard+json" href={`${SITE_ORIGIN}/.well-known/ard.json`} />
+      <link rel="api-catalog" href={`${SITE_ORIGIN}/.well-known/api-catalog`} />
+      <link rel="service-desc" type="application/vnd.oai.openapi+json" href={`${SITE_ORIGIN}/openapi.json`} />
+      <link rel="alternate" type="text/plain" title="llms.txt" href={`${SITE_ORIGIN}/llms.txt`} />
       <style dangerouslySetInnerHTML={{ __html: STYLE }} />
       <script
         type="application/ld+json"
