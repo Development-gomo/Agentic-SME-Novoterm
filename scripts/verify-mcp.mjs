@@ -142,6 +142,18 @@ async function checkDiscoveryFiles(contactEnabled) {
     if (r.status === 200 && /rel="canonical"/.test(r.headers.get("link") ?? "")) okCount++;
   }
   assert(links.length > 100 && okCount === links.length, `every markdown page listed in pages.md responds with a canonical link (${okCount}/${links.length})`);
+
+  // Added in v1.4.0: MCP documentation page and the Swedish-only language markers.
+  const docs = await fetch(`${BASE_URL}/agent/mcp`);
+  const docsText = await docs.text();
+  const toolsList = (await (await fetch(`${BASE_URL}/mcp/tools`)).json()).tools.map((t) => t.name);
+  assert(docs.status === 200 && toolsList.every((n) => docsText.includes(`tool-${n}`)), `/agent/mcp documents every tool (${toolsList.length})`);
+  assert(/Authentication: <strong>none<\/strong>/.test(docsText), "/agent/mcp states that no authentication is needed");
+  const api = await fetch(`${BASE_URL}/agent/v1/services.json`);
+  const apiJson = await api.json();
+  assert(apiJson.language === "sv-SE" && api.headers.get("content-language") === "sv", "/agent/v1 responses are marked Swedish (language field and Content-Language header)");
+  const link = (await fetch(`${BASE_URL}/agent`)).headers.get("link") ?? "";
+  assert(/rel="api-catalog"/.test(link) && /rel="service-desc"/.test(link), "/agent sends a Link header to the API catalog and OpenAPI description");
 }
 
 async function main() {

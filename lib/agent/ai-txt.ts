@@ -59,6 +59,7 @@ OpenAPI:     ${abs("/openapi.json")}
 API-Catalog: ${abs("/api-catalog.json")}
 MCP-Server:  ${abs("/mcp")}
 MCP-Tools:   ${abs("/mcp/tools")}
+MCP-Docs:    ${abs("/agent/mcp")}
 MCP-Card:    ${abs("/.well-known/mcp/server-card.json")}
 ARD:         ${abs("/.well-known/ard.json")}
 API-Catalog-WellKnown: ${abs("/.well-known/api-catalog")}

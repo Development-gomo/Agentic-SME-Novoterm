@@ -38,6 +38,8 @@ export function buildLlmsText(): string {
 
 > ${organization.tagline}. ${organization.lead}
 
+**Language:** everything linked from this file — pages, llms-full.txt, the markdown pages, the /agent/v1 API and the MCP server — is Swedish (sv-SE), from the Swedish site. The English site under ${abs("/en/")} is a partial mirror (not every page or article exists in English) and is not covered here.
+
 Novoterm Translation was founded in ${organization.founded} and is based in ${organization.headquarters}. The in-house team of ${organization.inHouseTeamSize} works with a network of ${organization.freelanceNetworkSize} freelance translators and reviewers to provide translation and language-review services in ${organization.languages} languages.
 
 ## Summary
@@ -81,7 +83,7 @@ Full FAQ: [Frågor och svar](${abs("/fragor-svar")}) (and see [llms-full.txt](${
 - [Agent JSON API](${abs("/agent/v1/index.json")})
 - [OpenAPI spec](${abs("/openapi.json")})
 - [API catalog](${abs("/api-catalog.json")})
-- [MCP server](${abs("/mcp")}) ([tool discovery](${abs("/mcp/tools")}), [server card](${abs("/.well-known/mcp/server-card.json")}))
+- [MCP server](${abs("/mcp")}) ([documentation](${abs("/agent/mcp")}), [tool discovery](${abs("/mcp/tools")}), [server card](${abs("/.well-known/mcp/server-card.json")}))
 - [Markdown version of every page](${abs("/agent/md/pages.md")}) (e.g. [Översättning](${abs("/agent/md/tjanster/oversattning.md")}))
 - [ARD manifest (Agentic Resource Discovery)](${abs("/.well-known/ard.json")})
 - [API catalog (RFC 9727)](${abs("/.well-known/api-catalog")})
@@ -96,7 +98,7 @@ Full index: [Videor](${abs("/videor")})
 
 ## Notes for AI Agents
 
-- Bilingual site: Swedish (primary) and English (under /en/, partially mirrored — not every article has an English translation).
+- Bilingual site: Swedish (primary) and English (under /en/, partially mirrored — not every article has an English translation). All resources listed here are Swedish-only.
 - General inquiries: ${contact.email.address}, ${contact.phone.label}, or the [contact form](${contact.form.url}). Named staff emails in the team data are personal channels, not the company contact.
 - Last verified: ${LAST_MODIFIED}.
 `;

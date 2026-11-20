@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Version | **1.3.0** (was 1.2.0 in October 2026) |
+| Version | **1.4.0** (1.3.0 released 2026-11-20; was 1.2.0 in October 2026) |
 | Site crawled | **2026-11-20** (Firecrawl batch scrape of every URL from the Firecrawl site map, the live sitemap and the October package, plus every further site link found on those pages: 241 URLs, all language versions, 0 errors) |
 | Page first published | 2026-07-28 (unchanged) |
 | Compared against | October 2026 package (repository root, crawled 2026-10-14, git commit `7cc9035`) |
@@ -14,6 +14,26 @@ Crawl scope: 241 URLs scraped — the 230 URLs in the Firecrawl site map, the li
 All page paths below are on `https://www.novoterm.se`.
 
 ---
+
+## v1.4.0 — fixes from the AI-platform review (A1–A11)
+
+Raised by Grok, ChatGPT, Claude and Perplexity after v1.3.0 went live. Items marked *main site* are in the `novoterm_website` repo (branch `feature/agentic-well-known-rewrites`), which deploys together with this release.
+
+| # | Item | Status |
+|---|---|---|
+| A1–A3 | `/.well-known/ard.json`, `/.well-known/mcp/server-card.json`, `/.well-known/api-catalog` returned 404 on www.novoterm.se | **Fixed (main site):** three `beforeFiles` rewrites to `https://novoterm-agent.vercel.app`, mapped one by one (not `/.well-known/:path*`) so the main site keeps its own well-known files. Tested locally through the main site: all three 200 with the right content types; `HEAD /.well-known/api-catalog` keeps its `api-catalog` Link header. |
+| A4 | Two broken links on `/agent` | **Fixed by A1–A3** — they were the well-known URLs. |
+| A5 | HTTP `Link` headers to the API catalog and OpenAPI | **Fixed (both repos):** every response carries `Link: <…/.well-known/api-catalog>; rel="api-catalog", <…/openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json", <…/.well-known/ard.json>; rel="ard"`. Set in the main site's `headers()` for its own pages and in this app's `next.config.mjs` for the proxied agent paths (proxied responses keep this app's headers). The markdown pages and the RFC 9727 catalog keep their own `Link` headers. |
+| A6 | Organization / ProfessionalService JSON-LD on the homepage, Service JSON-LD on service pages | **Fixed (main site):** the site's single organisation entity (`/#organization`) is now `Organization` + `ProfessionalService` with address, phone, email, founding year 1996, `contactPoint` and `sameAs`, and is output on the homepage. `/tjanster/*` and `/services/*` output a `Service` node provided by that organisation — skipped where the CMS `custom_schema` field already contains a Service (today: `korrekturlasning`), so no page carries two. |
+| A7 | `Content-Signal` lines in robots.txt | **Fixed (main site):** `Content-Signal: search=yes, ai-input=yes, ai-train=yes` in each of the three user-agent groups, matching ai.txt (indexing, retrieval and training allowed). |
+| A8 | ai.txt and `/mcp/tools` must agree on the contact tool | **Already consistent** since v1.3.0: ai.txt says no actions are available and `/mcp/tools` lists 13 read-only tools. The mismatch the reviewers saw came from cached copies of the October files. The new MCP page states it too. |
+| A9 | MCP documentation page | **Added:** `https://www.novoterm.se/agent/mcp` — endpoint, transport, protocol versions, **no authentication**, rate limits (from the same constants the server enforces, now in `lib/mcp/limits.ts`), all tools with their parameters, a client configuration snippet and four curl examples (all tested). Linked from the agent page, llms.txt, ai.txt (`MCP-Docs`), both API catalogs; it is now the `websiteUrl` of the MCP server card and `server.json`. |
+| A10 | Mark Swedish-only resources | **Fixed:** llms.txt states at the top that everything it links to is Swedish (sv-SE) and that the English site is a partial mirror not covered; every `/agent/v1` response has `language: "sv-SE"` and `languageNote`, and the API data and markdown pages send `Content-Language: sv`. OpenAPI documents both fields (API spec 1.0.0 → 1.1.0, additive). |
+| A11 | `/.well-known/security.txt` (optional) | **Added (main site):** RFC 9116 file served by the main site itself, contact `mailto:info@novoterm.se` (the published general contact — replace it if Novoterm has a dedicated security address), expires 2027-11-20. |
+
+Skipped by decision: `ai-plugin.json` and an `agents.json` / agent-card file (optional, legacy).
+
+Also in this release: the main site's Next.js 16.4.3 → 16.4.6 (`npm audit --omit=dev` 1 moderate → 0). Agent version 1.3.0 → 1.4.0 (`package.json`, `server.json`, `MCP_SERVER_VERSION`). `verify-mcp.mjs` gains four checks (MCP page lists every tool and says "no authentication", Swedish markers on the API, `Link` header on `/agent`): 75 checks.
 
 ## Release changes beyond content (maintenance pass and external review)
 

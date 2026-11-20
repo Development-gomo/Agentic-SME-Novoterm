@@ -1,4 +1,4 @@
-# Deployment — Novoterm Agentic Web (v1.3.0, November 2026)
+# Deployment — Novoterm Agentic Web (v1.4.0, November 2026)
 
 This package is a standalone Next.js app (Next.js 16, Node.js ≥ 20.9) deployed on Vercel. Visitors and agents reach it through rewrites on the main site, www.novoterm.se, which is a separate headless-WordPress + Next.js app. Nothing here changes the main site's own pages.
 
@@ -33,24 +33,23 @@ Already in place (checked 2026-11-20 — unknown paths under these return this a
 | `/llms.txt`, `/llms-full.txt`, `/ai.txt`, `/api-catalog.json`, `/openapi.json` | |
 | `/mcp`, `/mcp/:path*` | This app rewrites `/mcp` to its internal `/mcp/mcp`. |
 
-**New in v1.3.0 — must be added on the main site** (today these return the main site's 404):
+**Added for v1.3.0/1.4.0** — in the main site repo (`novoterm_website`, `next.config.mjs`, `beforeFiles`, branch `feature/agentic-well-known-rewrites`), each to `https://novoterm-agent.vercel.app` + the same path:
 
-| Path | Rewrite to this deployment's same path |
+| Path | What it is |
 |---|---|
 | `/.well-known/ard.json` | ARD manifest |
 | `/.well-known/api-catalog` | RFC 9727 API catalog (also answers `HEAD`) |
 | `/.well-known/mcp/server-card.json` | MCP server card |
 
-Make sure the main site's own `/.well-known/*` handling (if any) does not take precedence over these three paths.
+They are mapped one by one, not as `/.well-known/:path*`, so the main site can keep its own well-known files (it now serves `/.well-known/security.txt` from `public/`). New pages under `/agent/...` (such as `/agent/mcp` and `/agent/md/*`) need no main-site change.
 
-Recommended on the main site (optional, improves discovery), in the `<head>` of every page:
+Also on the main site, released together with v1.4.0:
+- a site-wide `Link` header (API catalog, OpenAPI, ARD) in `headers()` — this app sets the same header on the agent paths, because proxied responses keep this app's headers;
+- `Content-Signal` lines in `public/robots.txt` (search, ai-input and ai-train allowed, matching ai.txt), next to the existing `LLM-Readable`, `LLM-Text`, `LLM-Full` and `Sitemap` lines; the package's own `public/robots.txt` is not what www.novoterm.se serves;
+- Organization + ProfessionalService JSON-LD on the homepage and Service JSON-LD on service pages (`components/SEO/StructuredData.jsx`);
+- `public/.well-known/security.txt`.
 
-```html
-<link rel="ard" type="application/ard+json" href="https://www.novoterm.se/.well-known/ard.json">
-<link rel="api-catalog" href="https://www.novoterm.se/.well-known/api-catalog">
-```
-
-The main site's robots.txt already carries the `LLM-Readable`, `LLM-Text`, `LLM-Full` and `Sitemap` lines; the package's own `public/robots.txt` is not what www.novoterm.se serves.
+**Deploy order:** this app first (so the new paths exist on `novoterm-agent.vercel.app`), then the main site.
 
 ## 4. Release steps
 

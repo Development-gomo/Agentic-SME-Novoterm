@@ -35,7 +35,7 @@ export function buildMcpServerCard() {
     title: "Novoterm Translation",
     description: MCP_DESCRIPTION,
     version: MCP_SERVER_VERSION,
-    websiteUrl: abs("/mcp"),
+    websiteUrl: abs("/agent/mcp"),
     remotes: [{ type: "streamable-http", url: abs("/mcp") }],
     _meta: {
       "se.novoterm/discovery": {
@@ -138,7 +138,7 @@ export function buildApiCatalogLinkset() {
           { href: MCP_SERVER_CARD_URL, type: "application/json" },
           { href: abs("/mcp/tools"), type: "application/json" },
         ],
-        "service-doc": [{ href: abs("/agent"), type: "text/html" }],
+        "service-doc": [{ href: abs("/agent/mcp"), type: "text/html" }],
         status: [{ href: abs("/mcp/health"), type: "application/json" }],
       },
       {

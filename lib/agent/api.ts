@@ -143,18 +143,27 @@ export type AgentApiMeta = {
   url: string;
   modified: string;
   usage: string;
+  language: string;
+  languageNote: string;
 };
 
 const USAGE_NOTE =
   "Read-only and public; no authentication required. Free to read, cite, and summarize. Prefer this endpoint over scraping the HTML site.";
 
+/** Every text value in the data is Swedish; the English site is a partial mirror the package does not cover. */
+export const CONTENT_LANGUAGE = "sv-SE";
+export const LANGUAGE_NOTE =
+  "Content is Swedish (sv-SE), taken from the Swedish site. The English site under https://www.novoterm.se/en/ is a partial mirror and is not covered by this data.";
+
 export function agentApiMeta(file: string): AgentApiMeta {
   const { name, description, url } = getAgentApiEndpoint(file);
-  return { name, description, url, modified: AGENT_API_MODIFIED, usage: USAGE_NOTE };
+  return { name, description, url, modified: AGENT_API_MODIFIED, usage: USAGE_NOTE, language: CONTENT_LANGUAGE, languageNote: LANGUAGE_NOTE };
 }
 
 export function agentApiResponse(file: string, data: unknown): Response {
-  return jsonResponse({ ...agentApiMeta(file), data });
+  const response = jsonResponse({ ...agentApiMeta(file), data });
+  response.headers.set("Content-Language", "sv");
+  return response;
 }
 
 const CORS_HEADERS = {

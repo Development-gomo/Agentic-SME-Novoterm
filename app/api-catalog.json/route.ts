@@ -109,7 +109,7 @@ export function GET() {
           }.`,
         method: "POST",
         baseURL: abs("/mcp"),
-        humanURL: abs("/mcp/tools"),
+        humanURL: abs("/agent/mcp"),
         "X-format": "application/json",
         "X-contentType": "mcp-streamable-http",
         "X-purpose": "agent-callable-tools",

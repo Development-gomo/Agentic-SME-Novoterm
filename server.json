@@ -3,8 +3,8 @@
   "name": "se.novoterm/translation",
   "title": "Novoterm Translation",
   "description": "MCP server exposing Novoterm Translation's services, industries, landing pages, case studies, videos, team, FAQ and articles as read-only callable tools for AI agents. A submit_contact_inquiry action that submits Novoterm's real contact form on a user's behalf is available when enabled on the deployment. Novoterm is a Stockholm-based translation and language-review agency.",
-  "version": "1.3.0",
-  "websiteUrl": "https://www.novoterm.se/mcp",
+  "version": "1.4.0",
+  "websiteUrl": "https://www.novoterm.se/agent/mcp",
   "remotes": [
     {
       "type": "streamable-http",

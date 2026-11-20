@@ -1,5 +1,12 @@
 import { CONTACT_TOOL_NAME } from "@/config/features";
 import { SITE_ORIGIN } from "@/config/site-origin";
+import {
+  MCP_CONTACT_LIMIT_MAX_REQUESTS,
+  MCP_CONTACT_LIMIT_WINDOW_MS,
+  MCP_MAX_BODY_BYTES,
+  MCP_RATE_LIMIT_MAX_REQUESTS,
+  MCP_RATE_LIMIT_WINDOW_MS,
+} from "@/lib/mcp/limits";
 import { MCP_SERVER_NAME, MCP_SERVER_VERSION, mcpTools } from "@/lib/mcp/tools";
 import { createRateLimiter, type RateLimitResult } from "@/lib/rate-limit";
 import { createMcpHandler } from "mcp-handler";
@@ -26,8 +33,9 @@ import { z } from "zod";
 
 export const maxDuration = 60;
 
-const RATE_LIMIT_MAX_REQUESTS = 100;
-const RATE_LIMIT_WINDOW_MS = 60_000;
+// Limits live in lib/mcp/limits.ts so the /agent/mcp documentation page publishes the same values.
+const RATE_LIMIT_MAX_REQUESTS = MCP_RATE_LIMIT_MAX_REQUESTS;
+const RATE_LIMIT_WINDOW_MS = MCP_RATE_LIMIT_WINDOW_MS;
 
 const mcpRateLimiter = createRateLimiter({
   namespace: "mcp",
@@ -41,10 +49,14 @@ const mcpRateLimiter = createRateLimiter({
  * Like the general limiter this is per server instance (see lib/rate-limit.ts).
  */
 const CONTACT_TOOL = CONTACT_TOOL_NAME;
-const contactRateLimiter = createRateLimiter({ namespace: "mcp-contact", windowMs: 60 * 60_000, maxRequests: 5 });
+const contactRateLimiter = createRateLimiter({
+  namespace: "mcp-contact",
+  windowMs: MCP_CONTACT_LIMIT_WINDOW_MS,
+  maxRequests: MCP_CONTACT_LIMIT_MAX_REQUESTS,
+});
 
 /** JSON-RPC requests here are small; anything larger is not a legitimate MCP call. */
-const MAX_BODY_BYTES = 64 * 1024;
+const MAX_BODY_BYTES = MCP_MAX_BODY_BYTES;
 
 /**
  * Origin policy (MCP Streamable HTTP: servers must validate Origin to prevent

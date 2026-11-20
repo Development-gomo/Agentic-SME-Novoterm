@@ -6,13 +6,15 @@
 
 export type OpenApiSchema = Record<string, unknown>;
 
-const envelopeRequired = ["name", "description", "url", "modified", "usage"];
+const envelopeRequired = ["name", "description", "url", "modified", "usage", "language", "languageNote"];
 const envelopeProps = {
   name: { type: "string", description: "Machine-friendly name of the endpoint." },
   description: { type: "string", description: "Plain-language description of what the endpoint returns." },
   url: { type: "string", format: "uri", description: "Canonical absolute URL of the endpoint." },
   modified: { type: "string", format: "date", description: "Freshness signal (YYYY-MM-DD); agents use it to detect stale data." },
   usage: { type: "string", description: "Usage and licensing note for the payload." },
+  language: { type: "string", description: "Language of the text in the payload (BCP 47). Always sv-SE: the data comes from the Swedish site.", example: "sv-SE" },
+  languageNote: { type: "string", description: "Explains that the English site (/en/) is a partial mirror not covered by this data." },
 };
 
 export const OPENAPI_SCHEMAS: Record<string, OpenApiSchema> = {

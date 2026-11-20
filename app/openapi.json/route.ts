@@ -55,8 +55,10 @@ export function GET() {
     info: {
       title: "Novoterm Agent API",
       description:
-        "Read-only, public JSON API exposing Novoterm Translation's services, industries, landing pages, case studies, videos, team, FAQ, and articles for AI agents and automated systems. No authentication required.",
-      version: "1.0.0",
+        "Read-only, public JSON API exposing Novoterm Translation's services, industries, landing pages, case studies, videos, team, FAQ, and articles for AI agents and automated systems. No authentication required. All content is Swedish (sv-SE), from the Swedish site; the English site under /en/ is a partial mirror and is not covered. Every response states this in its `language` and `languageNote` fields.",
+      // 1.1.0: response envelopes gained `language` and `languageNote` (additive, non-breaking).
+      version: "1.1.0",
+      "x-content-language": "sv-SE",
       "x-modified": AGENT_API_MODIFIED,
       contact: { name: SITE_CONFIG.legalName, email: SITE_CONFIG.contactPoint.email, url: SITE_CONFIG.contactPoint.url },
     },

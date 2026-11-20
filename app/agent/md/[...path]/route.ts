@@ -18,6 +18,7 @@ export function generateStaticParams() {
 
 const headers = (extra: Record<string, string> = {}) => ({
   "Content-Type": "text/markdown; charset=utf-8",
+  "Content-Language": "sv",
   "Cache-Control": "public, max-age=3600, s-maxage=3600",
   "Access-Control-Allow-Origin": "*",
   ...extra,
